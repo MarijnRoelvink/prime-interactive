@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset=utf-8>
+    <title>My first three.js app</title>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            margin: 0;
+            display: flex;
+            align-items: stretch;
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%
+        }
+    </style>
+</head>
+<body>
+<canvas id="glCanvas">
+
+</canvas>
+</body>
+<script src="js/three.min.js"></script>
+<script id="vertex-shader" type="not-javascript">
+// Per-vertex attributes
+attribute vec3 pos; // World-space position
+
+varying highp vec3 fragPos;
+
+void main() {
+	// Transform 3D position into on-screen position
+	gl_Position = (vec4(pos, 1.0));
+	fragPos = pos;
+
+}
+
+
+</script>
+<script id="fragment-shader" type="not-javascript">
+// Global variables for lighting calculations
+// D------C
+// |      |
+// |      |
+// A------B
+varying highp vec3 fragPos;
+
+uniform sampler2D texToon;
+uniform highp vec2 pA;
+uniform highp vec2 pC;
+
+
+
+void main() {
+	highp vec2 uv = vec2(fragPos.x, fragPos.y);
+	uv = (uv - pA);
+	uv = vec2(uv.x/(pC.x-pA.x), uv.y/(pC.y-pA.y)*-1.0+1.0);
+
+	// output
+    gl_FragColor = texture2D(texToon, uv);
+}
+
+
+</script>
+
+<script>
+    // instantiate a loader
+    var loader = new THREE.ImageLoader();
+    loader.setCrossOrigin(null);
+
+    var loadedImages = [];
+    var imgUrls = ['assets/puppy1.jpg', 'assets/puppy2.jpg', 'assets/puppy3.jpg', 'assets/puppy4.jpg', 'assets/puppy5.jpg'];
+
+    function Point(x, y, z) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+    }
+
+    function initGL() {
+        var canvas = document.getElementById('glCanvas');
+        canvas.width = canvas.clientWidth;
+        canvas.height = canvas.clientHeight;
+        var gl = canvas.getContext('webgl');
+        // Only continue if WebGL is available and working
+        if (gl === null) {
+            alert("Unable to initialize WebGL. Your browser or machine may not support it.");
+            return;
+        }
+        // Set clear color to black, fully opaque
+        gl.clearColor(0.0, 0.0, 0.0, 1.0);
+        // Clear the color buffer with specified clear color
+        gl.clear(gl.COLOR_BUFFER_BIT);
+
+        return gl;
+    }
+
+    function loadShader(gl, type, source) {
+        const shader = gl.createShader(type);
+
+        // Send the source to the shader object
+        gl.shaderSource(shader, source);
+
+        // Compile the shader program
+        gl.compileShader(shader);
+
+        // See if it compiled successfully
+        if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+            console.log('An error occurred compiling the shaders: ' + gl.getShaderInfoLog(shader));
+            gl.deleteShader(shader);
+            return null;
+        }
+        return shader;
+    }
+
+    function loadShaders(gl) {
+
+        const vertexShader = loadShader(gl, gl.VERTEX_SHADER, document.getElementById("vertex-shader").text);
+        const fragmentShader = loadShader(gl, gl.FRAGMENT_SHADER, document.getElementById("fragment-shader").text);
+
+        // Create the shader program
+
+        const shaderProgram = gl.createProgram();
+        gl.attachShader(shaderProgram, vertexShader);
+        gl.attachShader(shaderProgram, fragmentShader);
+        gl.linkProgram(shaderProgram);
+
+        if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
+            console.log('Unable to initialize the shader program: ' + gl.getProgramInfoLog(shaderProgram));
+            return null;
+        }
+
+        return shaderProgram;
+    }
+
+    function loadPlane(gl, programInfo, pA, pC) {
+        var vertexBuffer = gl.createBuffer();
+
+        //vertexBuffer is now current buffer retrieve data from
+        gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+
+        const vertices = [
+            pC.x, pA.y, 0.0,
+            pA.x, pA.y, 0.0,
+            pC.x, pC.y, 0.0,
+            pA.x, pC.y, 0.0
+        ];
+
+        programInfo.pA = pA;
+        programInfo.pC = pC;
+        //insert data into the current vertex buffer
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+
+        //binds the current vertex buffer to the pos attribute in the shader
+        gl.vertexAttribPointer(programInfo.attribLocations.pos, 3, gl.FLOAT, false, 0, 0);
+        gl.enableVertexAttribArray(programInfo.attribLocations.pos);
+    }
+
+    function loadTexture(gl, programInfo, index) {
+        const texture = gl.createTexture();
+
+        // Tell WebGL we want to affect texture unit 0
+        gl.activeTexture(gl.TEXTURE0);
+        gl.bindTexture(gl.TEXTURE_2D, texture);
+        console.log(loadedImages);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, loadedImages[index]);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+        //gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+
+        return texture;
+    }
+
+    function loadImages(urls, imgs, callback) {
+        var imgsloaded = 0;
+        for (var i = 0; i < urls.length; i++) {
+            loader.load(urls[i], function (image) {
+                    imgs.push(image);
+                    imgsloaded++;
+                    if (imgsloaded >= urls.length) {
+                        callback();
+                    }
+                },
+                // onProgress callback currently not supported
+                undefined,
+                // onError callback
+                function () {
+                    console.error('An error happened.');
+                });
+        }
+    }
+
+    function showImages() {
+        var gl = initGL();
+        var shaderProgram = loadShaders(gl);
+        const programInfo = {
+            program: shaderProgram,
+            attribLocations: {
+                pos: gl.getAttribLocation(shaderProgram, 'pos'),
+            },
+            uniformLocations: {
+                textoon: gl.getUniformLocation(shaderProgram, 'texToon'),
+                pA: gl.getUniformLocation(shaderProgram, 'pA'),
+                pC: gl.getUniformLocation(shaderProgram, 'pC'),
+            },
+        };
+
+        for(var i = 0; i < loadedImages.length; i++) {
+            const plane = {
+                pA: new Point(-1.0, -1.0 + i*0.5, 0.0),
+                pC: new Point(-0.5, -0.5 + i*0.5, 0.0)
+            };
+            loadPlane(gl, programInfo, plane.pA, plane.pC);
+            loadTexture(gl, programInfo, i);
+            console.log(plane);
+            gl.useProgram(shaderProgram);
+            gl.uniform2f(programInfo.uniformLocations.pA, plane.pA.x, plane.pA.y);
+            gl.uniform2f(programInfo.uniformLocations.pC, plane.pC.x, plane.pC.y);
+            gl.uniform1i(gl.getUniformLocation(shaderProgram, 'texToon'), 0);
+            gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+        }
+
+    }
+
+
+    loadImages(imgUrls, loadedImages, showImages);
+
+</script>
+</html>
