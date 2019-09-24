@@ -1,5 +1,4 @@
-function initGL() {
-    var canvas = document.getElementById('glCanvas');
+function initGL(canvas) {
     canvas.width = canvas.clientWidth;
     canvas.height = canvas.clientHeight;
 
@@ -9,12 +8,14 @@ function initGL() {
         alert("Unable to initialize WebGL. Your browser or machine may not support it.");
         return;
     }
+    return gl;
+}
+
+function clearScreen(gl) {
     // Set clear color to black, fully opaque
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
     // Clear the color buffer with specified clear color
     gl.clear(gl.COLOR_BUFFER_BIT);
-
-    return gl;
 }
 
 function loadMesh(gl, programInfo, mesh) {
@@ -32,6 +33,8 @@ function loadMesh(gl, programInfo, mesh) {
     //binds the current vertex buffer to the norm attribute in the shader
     gl.vertexAttribPointer(programInfo.attribLocations.norm, mesh.normalBuffer.itemSize, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(programInfo.attribLocations.norm);
+
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, mesh.indexBuffer);
     return mesh;
 }
 
@@ -110,26 +113,16 @@ function loadTexture(gl, programInfo, image) {
     return texture;
 }
 
-function draw(meshes) {
-    var gl = initGL();
-    var shaderProgram = loadShaders(gl);
-    gl.useProgram(shaderProgram);
-    const programInfo = {
-        program: shaderProgram,
-        attribLocations: {
-            pos: gl.getAttribLocation(shaderProgram, 'pos'),
-            norm: gl.getAttribLocation(shaderProgram, 'norm')
-        },
-        uniformLocations: {
-            textoon: gl.getUniformLocation(shaderProgram, 'texToon'),
-        },
-    };
-    var mesh = loadMesh(gl,  programInfo, meshes.gears);
-
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, mesh.indexBuffer);
-    gl.drawElements(gl.TRIANGLES, mesh.indexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
+/**
+ *
+ * @param angle
+ * @returns {mat3}
+ */
+function rotateMatrix(angle) {
+    angle = (angle/360)*2*Math.PI;
+    return mat3.transpose(mat3.createFrom(
+        Math.cos(angle), -Math.sin(angle), 0,
+        Math.sin(angle), Math.cos(angle), 0,
+        0, 0, 1));
 }
 
-OBJ.downloadMeshes({
-    'gears': 'assets/mesh/Gear.obj'
-}, draw);
