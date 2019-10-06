@@ -53,7 +53,7 @@ function drawMesh(gl, programInfo, stat, mesh) {
 }
 
 function loadCircle(gl, programInfo, rotation) {
-    var radius = 0.6;
+    var radius = 0.62;
     var numPoints = Math.abs(Math.floor(100*(rotation/(2*Math.PI))));
 
     var vertices = [];
