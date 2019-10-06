@@ -19,6 +19,8 @@ function clearScreen(gl) {
 }
 
 function loadMesh(gl, programInfo, mesh) {
+    gl.useProgram(programInfo.program);
+
     //load the mesh into buffers for vertex, normal and texture coordinates and add those to the mesh object
     OBJ.initMeshBuffers(gl, mesh);
 
@@ -36,6 +38,36 @@ function loadMesh(gl, programInfo, mesh) {
 
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, mesh.indexBuffer);
     return mesh;
+}
+
+function loadCircle(gl, programInfo, rotation) {
+    gl.useProgram(programInfo.circle.program);
+    var vertexBuffer = gl.createBuffer();
+
+    //vertexBuffer is now current buffer retrieve data from
+    gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+
+    var radius = 0.5;
+    var numPoints = 100*(rotation%(2*Math.PI)/(2*Math.PI));
+
+    var vertices = [];
+
+    for(var i = 0; i < numPoints; i ++) {
+        vertices = vertices.concat([
+            Math.cos(i*rotation/numPoints)*radius, Math.sin(i*rotation/numPoints)*radius, 0.0]);
+    }
+
+
+    //insert data into the current vertex buffer
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.DYNAMIC_DRAW);
+    //binds the current vertex buffer to the pos attribute in the shader
+    gl.vertexAttribPointer(programInfo.circle.pos, 3, gl.FLOAT, false, 0, 0);
+    gl.enableVertexAttribArray(programInfo.circle.pos);
+
+}
+
+function drawCircle(gl, programInfo, rotation) {
+
 }
 
 function loadShader(gl, type, source) {
@@ -56,16 +88,19 @@ function loadShader(gl, type, source) {
     return shader;
 }
 
-function loadShaders(gl) {
+function loadShaders(gl, name, setCustomPos = 0) {
 
-    const vertexShader = loadShader(gl, gl.VERTEX_SHADER, document.getElementById("vertex-shader").text);
-    const fragmentShader = loadShader(gl, gl.FRAGMENT_SHADER, document.getElementById("fragment-shader").text);
+    const vertexShader = loadShader(gl, gl.VERTEX_SHADER, document.getElementById(name+"vertex-shader").text);
+    const fragmentShader = loadShader(gl, gl.FRAGMENT_SHADER, document.getElementById(name+"fragment-shader").text);
 
     // Create the shader program
-
     const shaderProgram = gl.createProgram();
     gl.attachShader(shaderProgram, vertexShader);
     gl.attachShader(shaderProgram, fragmentShader);
+
+    if(setCustomPos) {
+        gl.bindAttribLocation(shaderProgram, setCustomPos, 'pos');
+    }
     gl.linkProgram(shaderProgram);
 
     if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
@@ -119,10 +154,20 @@ function loadTexture(gl, programInfo, image) {
  * @returns {mat3}
  */
 function rotateMatrix(angle) {
-    angle = (angle/360)*2*Math.PI;
     return mat3.transpose(mat3.createFrom(
         Math.cos(angle), -Math.sin(angle), 0,
         Math.sin(angle), Math.cos(angle), 0,
+        0, 0, 1));
+}
+
+function d2r (angle) {
+    return (angle/360)*2*Math.PI;
+}
+
+function scaleToScreen(hDivW) {
+    return mat3.transpose(mat3.createFrom(
+        hDivW, 0, 0,
+        0, 1, 0,
         0, 0, 1));
 }
 

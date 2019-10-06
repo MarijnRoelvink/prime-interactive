@@ -20,12 +20,62 @@
             width: 100%;
             height: 100%
         }
+
+        #matrix {
+            width: 300px;
+            height: 100px;
+            position: absolute;
+            right: 0;
+            bottom: 0;
+            background: black;
+            color: white;
+        }
+
+        #matrix div {
+            alignment: center;
+            position: absolute;
+        }
+
+        .matrix:before, .matrix:after {
+            content: "";
+            position: absolute;
+            top: 0;
+            border: 1px solid #fff;
+            width: 6px;
+            height: 100%;
+        }
+        .matrix:before {
+            left: -6px;
+            border-right: 0px;
+        }
+        .matrix:after {
+            right: -6px;
+            border-left: 0px;
+        }
+        .matrix td {
+            padding: 5px;
+            text-align: center;
+        }
+
     </style>
 </head>
 <body>
 <canvas id="glCanvas">
-
 </canvas>
+<div id="matrix">
+    <div align=center>
+        <table class="matrix">
+            <tr>
+                <td>cos(<span class="angle">T</span>)</td>
+                <td>-sin(<span class="angle">T</span>)</td>
+            </tr>
+            <tr>
+                <td>sin(<span class="angle">T</span>)</td>
+                <td>cos(<span class="angle">T</span>)</td>
+            </tr>
+        </table>
+    </div>
+</div>
 </body>
 <script src="js/webgl-obj-loader.js"></script>
 <script id="vertex-shader" type="not-javascript">
@@ -33,12 +83,13 @@
 attribute vec3 pos; // World-space position
 attribute vec3 norm; // World-space position
 
+uniform mat3 scaleToScreen;
 uniform mat3 rotation;
 varying highp vec3 fragNorm;
 
 void main() {
 	// Transform 3D position into on-screen position
-	gl_Position = (vec4(rotation*pos, 1.0));
+	gl_Position = (vec4(scaleToScreen*rotation*pos, 1.0));
 	fragNorm = norm;
 
 }
@@ -50,6 +101,23 @@ varying highp vec3 fragNorm;
 void main() {
 	// output
     gl_FragColor = vec4(abs(fragNorm), 1.0);
+}
+</script>
+<script id="circle-vertex-shader" type="not-javascript">
+// Per-vertex attributes
+attribute vec3 pos; // World-space position
+
+void main() {
+	// Transform 3D position into on-screen position
+	gl_Position = (vec4(pos, 1.0));
+
+}
+</script>
+<script id="circle-fragment-shader" type="not-javascript">
+
+void main() {
+	// output
+    gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
 }
 </script>
 <script src="js/gl-matrix.js"></script>
