@@ -68,6 +68,10 @@ function registerMouseEvents() {
         stat.movement = [0, 0];
         console.log("Done dragging");
     };
+
+    window.onresize = function (event) {
+        programInfo.screenDimension = canvas.clientHeight/canvas.clientWidth;
+    }
 }
 
 function tick() {
