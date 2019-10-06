@@ -18,12 +18,16 @@ function clearScreen(gl) {
     gl.clear(gl.COLOR_BUFFER_BIT);
 }
 
-function loadMesh(gl, programInfo, mesh) {
+function initMesh(gl, programInfo, mesh) {
     gl.useProgram(programInfo.program);
 
     //load the mesh into buffers for vertex, normal and texture coordinates and add those to the mesh object
     OBJ.initMeshBuffers(gl, mesh);
+    return loadMeshBuffers(gl, programInfo, mesh);
 
+}
+
+function loadMeshBuffers(gl, programInfo, mesh) {
     //mesh.vertexBuffer is now current buffer retrieve data from
     gl.bindBuffer(gl.ARRAY_BUFFER, mesh.vertexBuffer);
     //binds the current vertex buffer to the pos attribute in the shader
@@ -40,24 +44,30 @@ function loadMesh(gl, programInfo, mesh) {
     return mesh;
 }
 
+function drawMesh(gl, programInfo, stat, mesh) {
+    gl.useProgram(programInfo.program);
+    loadMeshBuffers(gl, programInfo, mesh);
+    gl.uniformMatrix3fv(programInfo.uniformLocations.scaleToScreen, false, scaleToScreen(programInfo.screenDimension));
+    gl.uniformMatrix3fv(programInfo.uniformLocations.rotation, false,  rotateMatrix(stat.rotation));
+    gl.drawElements(gl.TRIANGLES, mesh.indexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
+}
+
 function loadCircle(gl, programInfo, rotation) {
-    gl.useProgram(programInfo.circle.program);
-    var vertexBuffer = gl.createBuffer();
-
-    //vertexBuffer is now current buffer retrieve data from
-    gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-
-    var radius = 0.5;
-    var numPoints = 100*(rotation%(2*Math.PI)/(2*Math.PI));
+    var radius = 0.6;
+    var numPoints = Math.abs(Math.floor(100*(rotation/(2*Math.PI))));
 
     var vertices = [];
 
-    for(var i = 0; i < numPoints; i ++) {
+    for(var i = 0; i < (numPoints); i ++) {
         vertices = vertices.concat([
-            Math.cos(i*rotation/numPoints)*radius, Math.sin(i*rotation/numPoints)*radius, 0.0]);
+            Math.cos(i*rotation/numPoints)*radius, Math.sin(i*rotation/numPoints)*radius, 0.0,
+            Math.cos((i+1)*rotation/numPoints)*radius, Math.sin((i+1)*rotation/numPoints)*radius, 0.0]);
     }
 
-
+    gl.useProgram(programInfo.circle.program);
+    var vertexBuffer = gl.createBuffer();
+    //vertexBuffer is now current buffer retrieve data from
+    gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
     //insert data into the current vertex buffer
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.DYNAMIC_DRAW);
     //binds the current vertex buffer to the pos attribute in the shader
@@ -66,8 +76,13 @@ function loadCircle(gl, programInfo, rotation) {
 
 }
 
-function drawCircle(gl, programInfo, rotation) {
+function drawCircle(gl, programInfo, stat) {
+    gl.useProgram(programInfo.circle.program);
 
+    loadCircle(gl, programInfo, stat.rotation);
+    gl.uniformMatrix3fv(programInfo.circle.scaleToScreen, false, scaleToScreen(programInfo.screenDimension));
+    var numItems = Math.abs(Math.floor(100*stat.rotation/(2*Math.PI)));
+    gl.drawArrays(gl.LINES, 0, 2*numItems);
 }
 
 function loadShader(gl, type, source) {
