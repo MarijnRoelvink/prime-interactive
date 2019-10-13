@@ -28,7 +28,7 @@
             right: 0;
             bottom: 0;
             background: black;
-            color: white;
+            color: #ffce2e ;
         }
 
         #matrix div {
@@ -40,7 +40,7 @@
             content: "";
             position: absolute;
             top: 0;
-            border: 1px solid #fff;
+            border: 1px solid #7ab1e8;
             width: 6px;
             height: 100%;
         }
@@ -77,7 +77,7 @@
     </div>
 </div>
 </body>
-<script src="js/webgl-obj-loader.js"></script>
+<script src="../js/webgl-obj-loader.js"></script>
 <script id="vertex-shader" type="not-javascript">
 // Per-vertex attributes
 attribute vec3 pos; // World-space position
@@ -97,10 +97,19 @@ void main() {
 <script id="fragment-shader" type="not-javascript">
 
 varying highp vec3 fragNorm;
+uniform bool renderLines;
 
 void main() {
 	// output
-    gl_FragColor = vec4(abs(fragNorm), 1.0);
+	if(renderLines) {
+	        gl_FragColor = vec4(0.48, 0.69, 0.91, 1.0); //make helplines blue
+	}
+    else if(abs(fragNorm).z > 0.9) {
+        gl_FragColor = vec4(0.81, 0.78, 0.75, 1.0); //make planes gray
+    }
+    else {
+        gl_FragColor = vec4(1.0, 0.81, 0.18, 1.0); // make edges yellow
+    }
 }
 </script>
 <script id="circle-vertex-shader" type="not-javascript">
@@ -118,11 +127,12 @@ void main() {
 
 void main() {
 	// output
-    gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
+    gl_FragColor = vec4(0.48, 0.69, 0.91, 1.0);
 }
 </script>
-<script src="js/gl-matrix.js"></script>
-<script src="js/webgl-utils.js"></script>
+<script src="../js/gl-matrix.js"></script>
+<script src="../js/webgl-utils.js"></script>
+<script src="../js/vector-math.js"></script>
 <script src="webglfunctions.js"></script>
 <script src="main.js"></script>
 </html>

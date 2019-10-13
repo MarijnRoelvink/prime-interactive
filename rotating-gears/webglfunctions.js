@@ -44,11 +44,12 @@ function loadMeshBuffers(gl, programInfo, mesh) {
     return mesh;
 }
 
-function drawMesh(gl, programInfo, stat, mesh) {
+function drawMesh(gl, programInfo, stat, mesh, renderLines = false) {
     gl.useProgram(programInfo.program);
     loadMeshBuffers(gl, programInfo, mesh);
     gl.uniformMatrix3fv(programInfo.uniformLocations.scaleToScreen, false, scaleToScreen(programInfo.screenDimension));
     gl.uniformMatrix3fv(programInfo.uniformLocations.rotation, false,  rotateMatrix(stat.rotation));
+    gl.uniform1i(programInfo.uniformLocations.renderLines, renderLines);
     gl.drawElements(gl.TRIANGLES, mesh.indexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
 }
 
@@ -57,7 +58,6 @@ function loadCircle(gl, programInfo, rotation) {
     var numPoints = Math.abs(Math.floor(100*(rotation/(2*Math.PI))));
 
     var vertices = [];
-
     for(var i = 0; i < (numPoints); i ++) {
         vertices = vertices.concat([
             Math.cos(i*rotation/numPoints)*radius, Math.sin(i*rotation/numPoints)*radius, 0.0,
@@ -76,7 +76,7 @@ function loadCircle(gl, programInfo, rotation) {
 
 }
 
-function drawCircle(gl, programInfo, stat) {
+function drawCircle(gl, programInfo, stat, thickness) {
     gl.useProgram(programInfo.circle.program);
 
     loadCircle(gl, programInfo, stat.rotation);
