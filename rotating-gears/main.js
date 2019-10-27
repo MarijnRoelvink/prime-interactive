@@ -8,7 +8,7 @@ var stat = {
     rotation: 0,
     dragging: false,
     mouseOrigin: [0, 0],
-}
+};
 
 
 
@@ -46,33 +46,46 @@ function init(meshes) {
 }
 
 function registerMouseEvents() {
-    canvas.onmousedown = function(event) {
-        stat.mouseOrigin = getRotationVector(event);
+    var start = function(x, y) {
+        stat.mouseOrigin = getRotationVector(x,y);
         stat.dragging = true;
         console.log("Start dragging");
-
+    };
+    canvas.onmousedown = function (event) {
+        start(event.offsetX, event.offsetY);
+    };
+    canvas.ontouchstart = function(event) {
+        start(event.touches[0].clientX,event.touches[0].clientY);
     };
 
-    canvas.onmousemove = function(event) {
+    var move = function(x, y) {
         if(stat.dragging) {
-            stat.rotation += getVectorAngle(getRotationVector(event), stat.mouseOrigin);
-            stat.mouseOrigin = getRotationVector(event);
+            stat.rotation += getVectorAngle(getRotationVector(x,y), stat.mouseOrigin);
+            stat.mouseOrigin = getRotationVector(x,y);
         }
     };
+    canvas.onmousemove = function(event) {
+        move(event.offsetX, event.offsetY);
+    };
+    canvas.ontouchmove = function(event) {
+        move(event.touches[0].clientX,event.touches[0].clientY);
+    };
 
-    canvas.onmouseup = function() {
+    var end = function() {
         stat.dragging = false;
         console.log("Done dragging");
     };
+    canvas.onmouseup = end;
+    canvas.ontouchend = end;
 
     window.onresize = function (event) {
         programInfo.screenDimension = canvas.clientHeight/canvas.clientWidth;
     }
 }
 
-function getRotationVector(event) {
-    return [event.offsetX - window.innerWidth/2,
-        event.offsetY - window.innerHeight/2];
+function getRotationVector(x, y) {
+    return [x - window.innerWidth/2,
+        y - window.innerHeight/2];
 }
 
 function tick() {
@@ -87,7 +100,7 @@ function updateMatrix() {
     var angle = stat.rotation;
     angle = Math.round(angle/Math.PI*100)/100;
     document.querySelectorAll(".angle").forEach(function(el) {
-        el.innerHTML = angle + "&pi;"
+        el.innerHTML = angle.toFixed(2) + "&pi;"
     });
 }
 

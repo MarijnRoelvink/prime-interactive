@@ -169,7 +169,7 @@ function loadTexture(gl, programInfo, image) {
  * @returns {mat3}
  */
 function rotateMatrix(angle) {
-    return mat3.transpose(mat3.createFrom(
+    return mat3.transpose(mat3.create(), mat3.fromValues(
         Math.cos(angle), -Math.sin(angle), 0,
         Math.sin(angle), Math.cos(angle), 0,
         0, 0, 1));
@@ -180,9 +180,17 @@ function d2r (angle) {
 }
 
 function scaleToScreen(hDivW) {
-    return mat3.transpose(mat3.createFrom(
-        hDivW, 0, 0,
-        0, 1, 0,
-        0, 0, 1));
+    if(hDivW < 1) {
+        return mat3.transpose(mat3.create(), mat3.fromValues(
+            hDivW, 0, 0,
+            0, 1, 0,
+            0, 0, 1));
+    } else {
+        return mat3.transpose(mat3.create(), mat3.fromValues(
+            1, 0, 0,
+            0, 1.0/hDivW, 0,
+            0, 0, 1));
+    }
+
 }
 

@@ -3,17 +3,22 @@
 <head>
     <meta charset=utf-8>
     <title>PRIME interactive</title>
+    <link rel="stylesheet" type="text/css" href="../assets/fonts/cmun-bright.css">
+    <link rel="stylesheet" type="text/css" href="../assets/fonts/cmun-bright-semibold.css">
     <style>
         html, body {
             height: 100%;
             margin: 0;
             padding: 0;
+            font-family: "Computer Modern Bright";
+            font-size: 25px;
         }
 
         body {
             margin: 0;
             display: flex;
             align-items: stretch;
+            background: black;
         }
 
         canvas {
@@ -23,12 +28,12 @@
 
         #matrix {
             width: 300px;
-            height: 100px;
+            height: 120px;
             position: absolute;
             right: 0;
             bottom: 0;
             background: black;
-            color: #ffce2e ;
+            color: #ffce2e;
         }
 
         #matrix div {
@@ -40,18 +45,21 @@
             content: "";
             position: absolute;
             top: 0;
-            border: 1px solid #7ab1e8;
+            border: 2px solid #7ab1e8;
             width: 6px;
             height: 100%;
         }
+
         .matrix:before {
             left: -6px;
             border-right: 0px;
         }
+
         .matrix:after {
             right: -6px;
             border-left: 0px;
         }
+
         .matrix td {
             padding: 5px;
             text-align: center;
@@ -93,6 +101,7 @@ void main() {
 	fragNorm = norm;
 
 }
+
 </script>
 <script id="fragment-shader" type="not-javascript">
 
@@ -111,6 +120,7 @@ void main() {
         gl_FragColor = vec4(1.0, 0.81, 0.18, 1.0); // make edges yellow
     }
 }
+
 </script>
 <script id="circle-vertex-shader" type="not-javascript">
 // Per-vertex attributes
@@ -122,6 +132,7 @@ void main() {
 	gl_Position = (vec4(scaleToScreen*pos, 1.0));
 
 }
+
 </script>
 <script id="circle-fragment-shader" type="not-javascript">
 
@@ -129,10 +140,12 @@ void main() {
 	// output
     gl_FragColor = vec4(0.48, 0.69, 0.91, 1.0);
 }
+
 </script>
 <script src="../js/gl-matrix.js"></script>
 <script src="../js/webgl-utils.js"></script>
 <script src="../js/vector-math.js"></script>
+<script src="../js/globals.js"></script>
 <script src="webglfunctions.js"></script>
 <script src="main.js"></script>
 </html>
