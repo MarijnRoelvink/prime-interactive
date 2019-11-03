@@ -5,11 +5,14 @@
     <title>PRIME interactive</title>
     <link rel="stylesheet" type="text/css" href="../assets/fonts/cmun-bright.css">
     <link rel="stylesheet" type="text/css" href="../assets/fonts/cmun-bright-semibold.css">
+    <link rel="stylesheet" type="text/css" href="../assets/style.css">
     <style>
         html, body {
             height: 100%;
             margin: 0;
             padding: 0;
+            background: black;
+            color: white;
         }
 
         body {
@@ -39,6 +42,9 @@
             margin: 5px;
         }
 
+        .matrix tr:hover {
+            background: #7ab1e8;
+        }
         .matrix td {
             padding: 5px;
             text-align: center;
@@ -47,10 +53,22 @@
         .matrix input {
             width: 20px;
             height: 20px;
+            background: black;
+        }
+
+        #row-ops {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around
         }
 
         table {
             border: 1px solid white;
+        }
+        .slidecontainer {
+            position: absolute;
+            left: 35px;
+            bottom: 14px;
         }
 
     </style>
@@ -58,40 +76,49 @@
 <body>
 <canvas id="glCanvas">
 </canvas>
+<div class="slidecontainer" >
+    <input type="range" min="1" max="100" value="50" class="slider" id="factor-slider">
+    <span id="factor"></span>
+</div>
 <div id="matrix">
     <div>
         <table class="matrix" id="input-matrix">
-            <tr>
-                <td><input type="number" value=1></td>
-                <td><input type="number" value=2></td>
-                <td><input type="number" value=3></td>
+            <tr class="yellow row-1">
+                <td><input type="text" value=1></td>
+                <td><input type="text" value=2></td>
+                <td><input type="text" value=3></td>
             </tr>
-            <tr>
-                <td><input type="number"></td>
-                <td><input type="number"></td>
-                <td><input type="number"></td>
+            <tr class="blue row-2">
+                <td><input type="text" value="5"></td>
+                <td><input type="text" value="6"></td>
+                <td><input type="text" value="7"></td>
             </tr>
-            <tr>
-                <td><input type="number"></td>
-                <td><input type="number"></td>
-                <td><input type="number"></td>
+            <tr class="pink row-3">
+                <td><input type="text" value="9"></td>
+                <td><input type="text" value="10"></td>
+                <td><input type="text" value="11"></td>
             </tr>
         </table>
     </div>
     <div>=</div>
     <div align=center>
         <table class="matrix" id="ans-vector">
-            <tr>
-                <td><input type="number" value=1></td>
+            <tr class="yellow row-1">
+                <td><input type="text" value=4></td>
             </tr>
-            <tr>
-                <td><input type="number" value=2></td>
+            <tr class="blue row-2">
+                <td><input type="text" value=8></td>
             </tr>
-            <tr>
-                <td><input type="number" value=3></td>
+            <tr class="pink row-3">
+                <td><input type="text" value=12></td>
             </tr>
         </table>
     </div>
+    <div id="row-ops">
+        <button>Row operation</button>
+        <button>Row division</button>
+    </div>
+</div>
 </body>
 <script src="../js/webgl-obj-loader.js"></script>
 <script id="vertex-shader" type="not-javascript">
@@ -112,6 +139,8 @@ void main() {
 
 
 
+
+
 </script>
 <script id="fragment-shader" type="not-javascript">
 
@@ -122,6 +151,8 @@ uniform highp vec4 color;
 void main() {
     gl_FragColor = color;
 }
+
+
 
 
 

@@ -53,25 +53,54 @@ function drawAxes(gl, programInfo) {
 }
 
 function drawPlanes(gl, programInfo, state) {
-    if(!state.planes) {
-        return;
-    }
     var radius = 5;
-    var vertices = getPlane(new Point(radius, radius, getHeight(radius, radius, state.planes[0])),
-        new Point(-radius, radius, getHeight(-radius, radius, state.planes[0])),
-        new Point(-radius, -radius, getHeight(-radius, -radius, state.planes[0])),
-        new Point(radius, -radius, getHeight(radius, -radius, state.planes[0])));
-    loadGeometry(gl, programInfo, vertices);
-    gl.uniform4f(programInfo.uniformLocations.color, 0.5, 0, 0.5, 0.6);
-    gl.drawArrays(gl.TRIANGLE_STRIP, 0, vertices.length / 3);
+    for(var i = 0; i < 3; i ++) {
+        var vertices;
+        var x = state.planes[i][0] != 0;
+        var y = state.planes[i][1] != 0;
+        var z = state.planes[i][2] != 0;
+        if(z) {
+            vertices = getPlane(new Point(radius, radius, getZ(radius, radius, state.planes[i])),
+                new Point(-radius, radius, getZ(-radius, radius, state.planes[i])),
+                new Point(-radius, -radius, getZ(-radius, -radius, state.planes[i])),
+                new Point(radius, -radius, getZ(radius, -radius, state.planes[i])));
+        } else if(y) {
+            vertices = getPlane(new Point(radius, getY(radius, radius, state.planes[i]), radius),
+                new Point(-radius, getY(-radius, radius, state.planes[i]), radius),
+                new Point(-radius, getY(-radius, -radius, state.planes[i]), -radius),
+                new Point(radius, getY(radius, -radius, state.planes[i]), -radius));
+        } else if (x) {
+            vertices = getPlane(new Point(getX(radius, radius, state.planes[i]), radius, radius),
+                new Point(getX(-radius, radius, state.planes[i]), -radius,  radius),
+                new Point(getX(-radius, -radius, state.planes[i]), -radius, -radius),
+                new Point(getX(radius, -radius, state.planes[i]), radius, -radius));
+        }
+        loadGeometry(gl, programInfo, vertices);
+        // gl.uniform4f(programInfo.uniformLocations.color, colors[i][0],colors[i][1],colors[i][2], 0.6);
+        gl.uniform4f(programInfo.uniformLocations.color, (i/2.0), 0, 1.0-i*0.5, 0.6);
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, vertices.length / 3);
+    }
 
 }
 
 //ax + by + cz = d
 //ax + by - d = -cz
 //(ax + by - d)/-c = z
-function getHeight(x, y, params) {
+function getZ(x, y, params) {
     return (params[0]*x + params[1]*y - params[3])/(-1*params[2]);
+}
+
+//ax + by + cz = d
+//ax + cz - d = -by
+//(ax + cz - d)/-b = y
+function getY(x, z, params) {
+    return (params[0]*x + params[2]*z - params[3])/(-1*params[1]);
+}
+//ax + by + cz = d
+//by + cz - d = -ax
+//(by + cz - d)/-a = x
+function getX(y, z, params) {
+    return (params[1]*y + params[2]*z - params[3])/(-1*params[0]);
 }
 
 function loadShader(gl, type, source) {

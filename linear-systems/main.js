@@ -29,6 +29,7 @@ function init() {
     };
     getLinearSystem();
 
+    registerMouseEvents();
     registerInputFunctions();
     tick();
 }
@@ -56,27 +57,80 @@ function registerInputFunctions() {
                 break;
         }
         console.log(state.camera.position);
-    }
+    };
+
+    $("#matrix td input").each(function() {
+        this.onchange = function () {
+            console.log("change!");
+            getLinearSystem();
+        }
+    })
 }
 
 function getLinearSystem() {
+    state.planes = [];
     var params = [];
-    $("#input-matrix td input").each(function (node) {
+    $("#input-matrix td input").each(function () {
         params.push($(this).val());
     });
-    var plane1 = params.slice(0, 3);
-    plane1.push($("#ans-vector input").val());
-    state.planes.push(plane1);
+    for(var i = 0; i < 9; i += 3) {
+        var plane = params.slice(i, i + 3);
+        plane.push($("#ans-vector input")[i/3].value);
+        state.planes.push(plane);
+    }
 }
 
-function getRotationVector(event) {
-    return [event.offsetX - window.innerWidth / 2,
-        event.offsetY - window.innerHeight / 2];
+function registerMouseEvents() {
+    var start = function(x, y) {
+        state.mouseOrigin = getRotationVector(x,y);
+        state.dragging = true;
+        console.log("Start dragging");
+    };
+    var move = function(x, y) {
+        if(state.dragging) {
+            var movement = getRotationVector(x, y);
+            state.camera.gumball(-(movement[0]-state.mouseOrigin[0])*0.01, (movement[1] - state.mouseOrigin[1])*0.01);
+            state.mouseOrigin = getRotationVector(x,y);
+        }
+    };
+    var end = function() {
+        state.dragging = false;
+        console.log("Done dragging");
+    };
+
+    canvas.onmousedown = function (event) {
+        start(event.offsetX, event.offsetY);
+    };
+    canvas.ontouchstart = function(event) {
+        start(event.touches[0].clientX,event.touches[0].clientY);
+    };
+    canvas.onmousemove = function(event) {
+        move(event.offsetX, event.offsetY);
+    };
+    canvas.ontouchmove = function(event) {
+        move(event.touches[0].clientX,event.touches[0].clientY);
+    };
+    canvas.onmouseup = end;
+    canvas.ontouchend = end;
+
+    window.onresize = function (event) {
+        programInfo.screenDimension = canvas.clientHeight/canvas.clientWidth;
+    };
+}
+
+function getRotationVector(x, y) {
+    return [x - window.innerWidth/2,
+        y - window.innerHeight/2];
 }
 
 function tick() {
     requestAnimFrame(tick);
+    update();
     draw();
+}
+
+function update() {
+    $("#factor").html($("#factor-slider").val());
 }
 
 function draw() {
