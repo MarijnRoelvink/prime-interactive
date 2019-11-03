@@ -11,7 +11,7 @@
             margin: 0;
             padding: 0;
             font-family: "Computer Modern Bright";
-            font-size: 25px;
+            font-size: 1.3em;
         }
 
         body {
@@ -27,8 +27,8 @@
         }
 
         #matrix {
-            width: 300px;
-            height: 120px;
+            width: 35%;
+            height: 20%;
             position: absolute;
             right: 0;
             bottom: 0;
@@ -85,7 +85,6 @@
     </div>
 </div>
 </body>
-<script src="../js/webgl-obj-loader.js"></script>
 <script id="vertex-shader" type="not-javascript">
 // Per-vertex attributes
 attribute vec3 pos; // World-space position
@@ -142,7 +141,8 @@ void main() {
 }
 
 </script>
-<script src="../js/gl-matrix.js"></script>
+<script src="../js/webgl-obj-loader.min.js"></script>
+<script src="../js/gl-matrix-min.js"></script>
 <script src="../js/webgl-utils.js"></script>
 <script src="../js/vector-math.js"></script>
 <script src="../js/globals.js"></script>

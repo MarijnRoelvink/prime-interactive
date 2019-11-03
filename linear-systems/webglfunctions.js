@@ -46,9 +46,6 @@ function drawAxes(gl, programInfo) {
     var thickness = 0.1;
     var length = 50;
 
-    // drawBox(gl, programInfo, [1, 0.5, 0.5], [-length, thickness, thickness], [-length / 2, 0, 0]);
-    // drawBox(gl, programInfo, [0.5, 1, 0.5], [thickness, -length, thickness], [0, -length / 2, 0]);
-    // drawBox(gl, programInfo, [0.5, 0.5, 1], [thickness, -thickness, length], [0, 0, -length / 2]);
     drawBox(gl, programInfo, [1, 0, 0], [length, thickness, thickness], [length / 2, 0, 0]);
     drawBox(gl, programInfo, [0, 1, 0], [thickness, length, thickness], [0, length / 2, 0]);
     drawBox(gl, programInfo, [0, 0, 1], [thickness, thickness, length], [0, 0, length / 2]);

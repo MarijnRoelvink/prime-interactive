@@ -29,15 +29,18 @@ class Camera {
     }
 
     gumball(right, up) {
-        this.position = vec3.rotateZ(this.position, this.position, this.target, right);
-        if(up) {
-            var vecXAx = vec3.fromValues(Math.sqrt(Math.pow(vec3.len(this.position), 2) - Math.pow(this.position[2],2)),
-                0, this.position[2]);
-            var newVec = vec3.rotateY(vec3.create(), vecXAx, this.target, up);
-            vec3.rotateZ(newVec, newVec, [0,0,0], vec3.angle(this.position, vecXAx));
-            this.position = newVec;
+        var rotate;
+        var rotatedPosVec;
+        if(right) {
+            rotate = mat4.fromRotation(mat4.create(), right, this.up);
+            rotatedPosVec = vec4.transformMat4(vec4.create(), vec4.fromValues(this.position[0],this.position[1],this.position[2], 1), rotate);
+            this.position = vec3.fromValues(rotatedPosVec[0]/rotatedPosVec[3],rotatedPosVec[1]/rotatedPosVec[3],rotatedPosVec[2]/rotatedPosVec[3]);
         }
-        // this.up = vec3.rotateZ(this.up, this.up, [0,0,0], up);
+        if(up) {
+            rotate = mat4.fromRotation(mat4.create(), up, vec3.cross(vec3.create(), this.position, this.up));
+            rotatedPosVec = vec4.transformMat4(vec4.create(), vec4.fromValues(this.position[0],this.position[1],this.position[2], 1), rotate);
+            this.position = vec3.fromValues(rotatedPosVec[0]/rotatedPosVec[3],rotatedPosVec[1]/rotatedPosVec[3],rotatedPosVec[2]/rotatedPosVec[3]);
+        }
         this.matrix = mat4.lookAt(this.matrix, this.position, this.target, this.up);
     }
 

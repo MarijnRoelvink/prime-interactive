@@ -1,13 +1,10 @@
 var gl;
 var canvas;
 var programInfo;
-var data = {};
-data.mesh = {};
-data.vector = {};
 var state = {
     dragging: false,
     mouseOrigin: [0, 0],
-    camera: new Camera([12, 12, 5], [0, 0, 0], [0, 0, 1]),
+    camera: new Camera([12, 12, 0], [0, 0, 0], [0, 0, 1]),
     planes: []
 };
 
@@ -32,11 +29,11 @@ function init() {
     };
     getLinearSystem();
 
-    registerMouseEvents();
+    registerInputFunctions();
     tick();
 }
 
-function registerMouseEvents() {
+function registerInputFunctions() {
     window.onresize = function (event) {
         programInfo.screenDimension = canvas.clientHeight / canvas.clientWidth;
     };
