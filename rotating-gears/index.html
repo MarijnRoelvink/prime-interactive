@@ -8,10 +8,11 @@
     <style>
         html, body {
             height: 100%;
+            min-height: 500px;
             margin: 0;
             padding: 0;
             font-family: "Computer Modern Bright";
-            font-size: 1.3em;
+            font-size: 1.1em;
         }
 
         body {
@@ -36,6 +37,11 @@
             color: #ffce2e;
         }
 
+        @media(max-width: 685px) {
+            #matrix {
+                width: 80%;
+            }
+        }
         #matrix div {
             alignment: center;
             position: absolute;
@@ -68,8 +74,7 @@
     </style>
 </head>
 <body>
-<canvas id="glCanvas">
-</canvas>
+<div style="width: 100%;"><canvas id="glCanvas"> </canvas></div>
 <div id="matrix">
     <div align=center>
         <table class="matrix">
