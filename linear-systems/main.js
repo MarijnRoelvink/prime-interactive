@@ -23,6 +23,9 @@ function init() {
             textoon: gl.getUniformLocation(shaderProgram, 'texToon'),
             mvp: gl.getUniformLocation(shaderProgram, 'mvp'),
             color: gl.getUniformLocation(shaderProgram, 'color'),
+            lightPos: gl.getUniformLocation(shaderProgram, 'lightPos'),
+            ka: gl.getUniformLocation(shaderProgram, 'ka'),
+            kd: gl.getUniformLocation(shaderProgram, 'kd'),
             scaleToScreen: gl.getUniformLocation(shaderProgram, 'scaleToScreen')
         },
         screenDimension: canvas.height / canvas.width
@@ -84,7 +87,6 @@ function registerMouseEvents() {
     var start = function(x, y) {
         state.mouseOrigin = getRotationVector(x,y);
         state.dragging = true;
-        console.log("Start dragging");
     };
     var move = function(x, y) {
         if(state.dragging) {
@@ -95,7 +97,6 @@ function registerMouseEvents() {
     };
     var end = function() {
         state.dragging = false;
-        console.log("Done dragging");
     };
 
     canvas.onmousedown = function (event) {

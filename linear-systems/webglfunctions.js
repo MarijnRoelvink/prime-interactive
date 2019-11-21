@@ -23,9 +23,9 @@ function clearScreen(gl) {
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 }
 
-function loadGeometry(gl, programInfo, vertices) {
+function loadGeometry(gl, programInfo, vertices, normals = []) {
     gl.useProgram(programInfo.program);
-    var vertexBuffer = gl.createBuffer();
+    let vertexBuffer = gl.createBuffer();
     //vertexBuffer is now current buffer retrieve data from
     gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
     //insert data into the current vertex buffer
@@ -33,6 +33,17 @@ function loadGeometry(gl, programInfo, vertices) {
     //binds the current vertex buffer to the pos attribute in the shader
     gl.vertexAttribPointer(programInfo.attribLocations.pos, 3, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(programInfo.attribLocations.pos);
+
+    if(normals) {
+        let normalBuffer = gl.createBuffer();
+        //vertexBuffer is now current buffer retrieve data from
+        gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
+        //insert data into the current normal buffer
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(normals), gl.STATIC_DRAW);
+        //binds the current vertex buffer to the pos attribute in the shader
+        gl.vertexAttribPointer(programInfo.attribLocations.norm, 3, gl.FLOAT, false, 0, 0);
+        gl.enableVertexAttribArray(programInfo.attribLocations.norm);
+    }
 }
 
 function drawBox(gl, programInfo, color, dimensions, base) {
@@ -46,6 +57,9 @@ function drawAxes(gl, programInfo) {
     var thickness = 0.1;
     var length = 50;
 
+    gl.uniform1f(programInfo.uniformLocations.kd, 0);
+    gl.uniform1f(programInfo.uniformLocations.ka, 0.8);
+
     drawBox(gl, programInfo, [1, 0, 0], [length, thickness, thickness], [length / 2, 0, 0]);
     drawBox(gl, programInfo, [0, 1, 0], [thickness, length, thickness], [0, length / 2, 0]);
     drawBox(gl, programInfo, [0, 0, 1], [thickness, thickness, length], [0, 0, length / 2]);
@@ -54,6 +68,10 @@ function drawAxes(gl, programInfo) {
 
 function drawPlanes(gl, programInfo, state) {
     var radius = 5;
+
+    gl.uniform1f(programInfo.uniformLocations.kd, 0.6);
+    gl.uniform1f(programInfo.uniformLocations.ka, 0.2);
+
     for(var i = 0; i < 3; i ++) {
         var vertices;
         var x = state.planes[i][0] != 0;
@@ -75,9 +93,9 @@ function drawPlanes(gl, programInfo, state) {
                 new Point(getX(-radius, -radius, state.planes[i]), -radius, -radius),
                 new Point(getX(radius, -radius, state.planes[i]), radius, -radius));
         }
-        loadGeometry(gl, programInfo, vertices);
-        // gl.uniform4f(programInfo.uniformLocations.color, colors[i][0],colors[i][1],colors[i][2], 0.6);
-        gl.uniform4f(programInfo.uniformLocations.color, (i/2.0), 0, 1.0-i*0.5, 0.6);
+        loadGeometry(gl, programInfo, vertices, getNormalsFromPlane(vertices));
+        gl.uniform4f(programInfo.uniformLocations.color, colors[i][0],colors[i][1],colors[i][2], 0.8);
+        // gl.uniform4f(programInfo.uniformLocations.color, (i/2.0), 0, 1.0-i*0.5, 0.6);
         gl.drawArrays(gl.TRIANGLE_STRIP, 0, vertices.length / 3);
     }
 
@@ -147,9 +165,11 @@ function loadShaders(gl, name, setCustomPos = 0) {
 function setUniforms(gl, programInfo, state) {
     gl.uniformMatrix3fv(programInfo.uniformLocations.scaleToScreen, false, scaleToScreen(programInfo.screenDimension));
 
-    var proj = mat4.perspective(mat4.create(), 45.0, canvas.width / canvas.height, 0.1, 50.0);
-    var mvp = mat4.mul(mat4.create(), proj, state.camera.matrix);
+    let proj = mat4.perspective(mat4.create(), 45.0, canvas.width / canvas.height, 0.1, 50.0);
+    let mvp = mat4.mul(mat4.create(), proj, state.camera.matrix);
     gl.uniformMatrix4fv(programInfo.uniformLocations.mvp, false, mvp);
+
+    gl.uniform3f(programInfo.uniformLocations.lightPos, state.camera.position[0], state.camera.position[1], state.camera.position[2]);
 
 }
 
