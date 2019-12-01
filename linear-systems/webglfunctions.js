@@ -67,31 +67,32 @@ function drawAxes(gl, programInfo) {
 }
 
 function drawPlanes(gl, programInfo, state) {
-    let radius = 5;
+    let radius = 5*state.camera.zoom;
 
     gl.uniform1f(programInfo.uniformLocations.kd, 0.6);
     gl.uniform1f(programInfo.uniformLocations.ka, 0.2);
 
     for(let i = 0; i < 3; i ++) {
         let vertices;
-        let x = state.linearSystem.planes[i][0] !== 0;
-        let y = state.linearSystem.planes[i][1] !== 0;
-        let z = state.linearSystem.planes[i][2] !== 0;
+        let planes = state.linearSystem.planes;
+        let x = planes[i][0] !== 0;
+        let y = planes[i][1] !== 0;
+        let z = planes[i][2] !== 0;
         if(z) {
-            vertices = getPlane(new Point(radius, radius, getZ(radius, radius, state.linearSystem.planes[i])),
-                new Point(-radius, radius, getZ(-radius, radius, state.linearSystem.planes[i])),
-                new Point(-radius, -radius, getZ(-radius, -radius, state.linearSystem.planes[i])),
-                new Point(radius, -radius, getZ(radius, -radius, state.linearSystem.planes[i])));
+            vertices = getPlane(new Point(radius, radius, getZ(radius, radius, planes[i])),
+                new Point(-radius, radius, getZ(-radius, radius, planes[i])),
+                new Point(-radius, -radius, getZ(-radius, -radius, planes[i])),
+                new Point(radius, -radius, getZ(radius, -radius, planes[i])));
         } else if(y) {
-            vertices = getPlane(new Point(radius, getY(radius, radius, state.linearSystem.planes[i]), radius),
-                new Point(-radius, getY(-radius, radius, state.linearSystem.planes[i]), radius),
-                new Point(-radius, getY(-radius, -radius, state.linearSystem.planes[i]), -radius),
-                new Point(radius, getY(radius, -radius, state.linearSystem.planes[i]), -radius));
+            vertices = getPlane(new Point(radius, getY(radius, radius, planes[i]), radius),
+                new Point(-radius, getY(-radius, radius, planes[i]), radius),
+                new Point(-radius, getY(-radius, -radius, planes[i]), -radius),
+                new Point(radius, getY(radius, -radius, planes[i]), -radius));
         } else if (x) {
-            vertices = getPlane(new Point(getX(radius, radius, state.linearSystem.planes[i]), radius, radius),
-                new Point(getX(-radius, radius, state.linearSystem.planes[i]), -radius,  radius),
-                new Point(getX(-radius, -radius, state.linearSystem.planes[i]), -radius, -radius),
-                new Point(getX(radius, -radius, state.linearSystem.planes[i]), radius, -radius));
+            vertices = getPlane(new Point(getX(radius, radius, planes[i]), radius, radius),
+                new Point(getX(-radius, radius, planes[i]), -radius,  radius),
+                new Point(getX(-radius, -radius, planes[i]), -radius, -radius),
+                new Point(getX(radius, -radius, planes[i]), radius, -radius));
         }
         if(vertices) {
             loadGeometry(gl, programInfo, vertices, getNormalsFromPlane(vertices));
@@ -147,7 +148,7 @@ function loadShaders(gl, name, setCustomPos = 0) {
 function setUniforms(gl, programInfo, state) {
     gl.uniformMatrix3fv(programInfo.uniformLocations.scaleToScreen, false, scaleToScreen(programInfo.screenDimension));
 
-    let proj = mat4.perspective(mat4.create(), 45.0, canvas.width / canvas.height, 0.1, 50.0);
+    let proj = mat4.perspective(mat4.create(), 45.0, canvas.width / canvas.height, 0.1, 100.0);
     let mvp = mat4.mul(mat4.create(), proj, state.camera.matrix);
     gl.uniformMatrix4fv(programInfo.uniformLocations.mvp, false, mvp);
 

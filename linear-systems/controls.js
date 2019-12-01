@@ -60,3 +60,10 @@ function registerKeyboardEvents() {
         }
     };
 }
+
+function updateSliders() {
+    $(".slider").each(function () {
+        let id = this.id.replace("-slider", "");
+        $("#" + id + "-factor").html(this.value);
+    });
+}

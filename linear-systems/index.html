@@ -140,13 +140,20 @@
             </div>
         </div>
         <div id="row-ops">
+            <div id="zoom-container" class="d-flex flex-column pl-2">
+                <div>Zoom</div>
+                <div class="d-flex w-100 m-0">
+                    <input type="range" min="20" max="150" value="100" step="1" class="slider w-100 " id="zoom-slider">
+                    <span id="zoom-factor"></span>
+                </div>
+            </div>
             <button class="btn btn-secondary m-2 row-ops-btn" id="row-addition-btn">Row addition</button>
             <div class="operations-tab align-items-baseline flex-column" id="row-addition" style="display: none">
                 <div class="d-flex">Add row <input id="add-row1" type="number" value="1" min="1" max="3" required>
                     to row <input id="add-row2" type="number" value="2" min="1" max="3" required> </div>
                 <div class="w-100">With factor:</div>
                 <div class="d-flex w-100">
-                    <input type="range" min="-10" max="10" value="0" step="0.25" class="slider" id="add-factor-slider">
+                    <input type="range" min="-10" max="10" value="0" step="0.25" class="slider" id="add-slider">
                     <span id="add-factor"></span>
                 </div>
                 <button class="btn btn-warning" onclick="state.linearSystem.applyEdit()">Apply</button>
@@ -164,7 +171,7 @@
                 <div class="d-flex">Multiply row <input id="mul-row" type="number" value="1" max="3" min="1" required></div>
                 <div class="w-100">With factor:</div>
                 <div class="d-flex w-100">
-                    <input type="range" min="-10" max="10" value="1" step="0.25" class="slider" id="mul-factor-slider">
+                    <input type="range" min="-10" max="10" value="1" step="0.25" class="slider" id="mul-slider">
                     <span id="mul-factor"></span>
                 </div>
                 <button class="btn btn-warning" onclick="state.linearSystem.applyEdit()">Apply</button>
@@ -231,6 +238,6 @@ void main() {
 <script src="Camera.js"></script>
 <script src="webglfunctions.js"></script>
 <script src="controls.js"></script>
-<script src="linear-systems.js"></script>
+<script src="linear-system.js"></script>
 <script src="main.js"></script>
 </html>

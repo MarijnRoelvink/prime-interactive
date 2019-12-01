@@ -67,14 +67,12 @@ class LinearSystem {
     }
 
     updateRowAddition() {
-        let factor = parseFloat($("#add-factor-slider").val());
-
         if ($("#add-row1")[0].validity.valid && $("#add-row2")[0].validity.valid) {
+            let factor = parseFloat($("#add-slider").val());
             let row1 = parseInt($("#add-row1").val() - 1);
             let row2 = parseInt($("#add-row2").val() - 1);
             this.planes[row2] = rowAddition(this.oldPlanes[row1], this.oldPlanes[row2], factor);
         }
-        $("#add-factor").html(factor);
     }
 
     updateRowSwitching() {
@@ -87,20 +85,17 @@ class LinearSystem {
     }
 
     updateRowMultiplication() {
-        let factor = parseFloat($("#mul-factor-slider").val());
-
         if ($("#mul-row")[0].validity.valid) {
+            let factor = parseFloat($("#mul-slider").val());
             let row = parseInt($("#mul-row").val()) - 1;
             this.planes[row] = rowMultiplication([...this.oldPlanes[row]], factor);
         }
-
-        $("#mul-factor").html(factor);
     }
 
     applyEdit() {
         this.oldPlanes = [...this.planes];
-        $("#add-factor-slider").val(0);
-        $("#mul-factor-slider").val(1);
+        $("#add-slider").val(0);
+        $("#mul-slider").val(1);
         this.toggleTab(this.currOperation);
     }
 

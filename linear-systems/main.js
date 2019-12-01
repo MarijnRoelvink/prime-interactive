@@ -43,6 +43,8 @@ function tick() {
 
 function update() {
     state.linearSystem.update();
+    updateSliders();
+    state.camera.setZoom(100/parseFloat($("#zoom-slider").val()));
 }
 
 function draw() {
