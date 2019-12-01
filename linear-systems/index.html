@@ -186,7 +186,6 @@
 attribute vec3 pos; // World-space position
 attribute vec3 norm; // World-space position
 
-uniform mat3 scaleToScreen;
 uniform mat4 mvp;
 
 varying highp vec3 fragNorm;
@@ -229,6 +228,7 @@ void main() {
 
 
 </script>
+<script src="../js/webgl-helpers.js"></script>
 <script src="../js/gl-matrix-min.js"></script>
 <script src="../js/webgl-utils.js"></script>
 <script src="../js/vector-math.js"></script>
@@ -238,6 +238,6 @@ void main() {
 <script src="Camera.js"></script>
 <script src="webglfunctions.js"></script>
 <script src="controls.js"></script>
-<script src="linear-system.js"></script>
+<script src="Linear-system.js"></script>
 <script src="main.js"></script>
 </html>
