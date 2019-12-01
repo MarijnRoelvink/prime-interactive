@@ -2,7 +2,7 @@ function initGL(canvas) {
     canvas.width = canvas.clientWidth;
     canvas.height = canvas.clientHeight;
 
-    var gl = canvas.getContext('webgl');
+    let gl = canvas.getContext('webgl');
     // Only continue if WebGL is available and working
     if (gl === null) {
         alert("Unable to initialize WebGL. Your browser or machine may not support it.");
@@ -47,15 +47,15 @@ function loadGeometry(gl, programInfo, vertices, normals = []) {
 }
 
 function drawBox(gl, programInfo, color, dimensions, base) {
-    var vertices = getBox(dimensions[0], dimensions[1], dimensions[2], base);
+    let vertices = getBox(dimensions[0], dimensions[1], dimensions[2], base);
     loadGeometry(gl, programInfo, vertices);
     gl.uniform4f(programInfo.uniformLocations.color, color[0], color[1], color[2], 1);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, vertices.length / 3);
 }
 
 function drawAxes(gl, programInfo) {
-    var thickness = 0.1;
-    var length = 50;
+    let thickness = 0.1;
+    let length = 50;
 
     gl.uniform1f(programInfo.uniformLocations.kd, 0);
     gl.uniform1f(programInfo.uniformLocations.ka, 0.8);
@@ -67,58 +67,40 @@ function drawAxes(gl, programInfo) {
 }
 
 function drawPlanes(gl, programInfo, state) {
-    var radius = 5;
+    let radius = 5;
 
     gl.uniform1f(programInfo.uniformLocations.kd, 0.6);
     gl.uniform1f(programInfo.uniformLocations.ka, 0.2);
 
-    for(var i = 0; i < 3; i ++) {
-        var vertices;
-        var x = state.planes[i][0] != 0;
-        var y = state.planes[i][1] != 0;
-        var z = state.planes[i][2] != 0;
+    for(let i = 0; i < 3; i ++) {
+        let vertices;
+        let x = state.linearSystem.planes[i][0] !== 0;
+        let y = state.linearSystem.planes[i][1] !== 0;
+        let z = state.linearSystem.planes[i][2] !== 0;
         if(z) {
-            vertices = getPlane(new Point(radius, radius, getZ(radius, radius, state.planes[i])),
-                new Point(-radius, radius, getZ(-radius, radius, state.planes[i])),
-                new Point(-radius, -radius, getZ(-radius, -radius, state.planes[i])),
-                new Point(radius, -radius, getZ(radius, -radius, state.planes[i])));
+            vertices = getPlane(new Point(radius, radius, getZ(radius, radius, state.linearSystem.planes[i])),
+                new Point(-radius, radius, getZ(-radius, radius, state.linearSystem.planes[i])),
+                new Point(-radius, -radius, getZ(-radius, -radius, state.linearSystem.planes[i])),
+                new Point(radius, -radius, getZ(radius, -radius, state.linearSystem.planes[i])));
         } else if(y) {
-            vertices = getPlane(new Point(radius, getY(radius, radius, state.planes[i]), radius),
-                new Point(-radius, getY(-radius, radius, state.planes[i]), radius),
-                new Point(-radius, getY(-radius, -radius, state.planes[i]), -radius),
-                new Point(radius, getY(radius, -radius, state.planes[i]), -radius));
+            vertices = getPlane(new Point(radius, getY(radius, radius, state.linearSystem.planes[i]), radius),
+                new Point(-radius, getY(-radius, radius, state.linearSystem.planes[i]), radius),
+                new Point(-radius, getY(-radius, -radius, state.linearSystem.planes[i]), -radius),
+                new Point(radius, getY(radius, -radius, state.linearSystem.planes[i]), -radius));
         } else if (x) {
-            vertices = getPlane(new Point(getX(radius, radius, state.planes[i]), radius, radius),
-                new Point(getX(-radius, radius, state.planes[i]), -radius,  radius),
-                new Point(getX(-radius, -radius, state.planes[i]), -radius, -radius),
-                new Point(getX(radius, -radius, state.planes[i]), radius, -radius));
+            vertices = getPlane(new Point(getX(radius, radius, state.linearSystem.planes[i]), radius, radius),
+                new Point(getX(-radius, radius, state.linearSystem.planes[i]), -radius,  radius),
+                new Point(getX(-radius, -radius, state.linearSystem.planes[i]), -radius, -radius),
+                new Point(getX(radius, -radius, state.linearSystem.planes[i]), radius, -radius));
         }
-        loadGeometry(gl, programInfo, vertices, getNormalsFromPlane(vertices));
-        gl.uniform4f(programInfo.uniformLocations.color, colors[i][0],colors[i][1],colors[i][2], 0.8);
-        // gl.uniform4f(programInfo.uniformLocations.color, (i/2.0), 0, 1.0-i*0.5, 0.6);
-        gl.drawArrays(gl.TRIANGLE_STRIP, 0, vertices.length / 3);
+        if(vertices) {
+            loadGeometry(gl, programInfo, vertices, getNormalsFromPlane(vertices));
+            gl.uniform4f(programInfo.uniformLocations.color, colors[i][0],colors[i][1],colors[i][2], 0.8);
+            // gl.uniform4f(programInfo.uniformLocations.color, (i/2.0), 0, 1.0-i*0.5, 0.6);
+            gl.drawArrays(gl.TRIANGLE_STRIP, 0, vertices.length / 3);
+        }
     }
 
-}
-
-//ax + by + cz = d
-//ax + by - d = -cz
-//(ax + by - d)/-c = z
-function getZ(x, y, params) {
-    return (params[0]*x + params[1]*y - params[3])/(-1*params[2]);
-}
-
-//ax + by + cz = d
-//ax + cz - d = -by
-//(ax + cz - d)/-b = y
-function getY(x, z, params) {
-    return (params[0]*x + params[2]*z - params[3])/(-1*params[1]);
-}
-//ax + by + cz = d
-//by + cz - d = -ax
-//(by + cz - d)/-a = x
-function getX(y, z, params) {
-    return (params[1]*y + params[2]*z - params[3])/(-1*params[0]);
 }
 
 function loadShader(gl, type, source) {

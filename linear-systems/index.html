@@ -3,6 +3,11 @@
 <head>
     <meta charset=utf-8>
     <title>PRIME interactive</title>
+    <script src="../js/jquery-3.4.1.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="../assets/bootstrap/css/bootstrap.css">
+    <script src="../assets/bootstrap/js/bootstrap.js"></script>
+<!--    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">-->
+<!--    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>-->
     <link rel="stylesheet" type="text/css" href="../assets/fonts/cmun-bright.css">
     <link rel="stylesheet" type="text/css" href="../assets/fonts/cmun-bright-semibold.css">
     <link rel="stylesheet" type="text/css" href="../assets/style.css">
@@ -23,27 +28,24 @@
 
         canvas {
             width: 100%;
-            height: 100%
+            /*height: 100%*/
         }
 
-        #matrix {
-            width: 300px;
-            height: 140px;
-            position: absolute;
-            right: 0;
-            bottom: 0;
+        .modal {
+            color: black;
+        }
+
+        #user-input {
+            width: max-content;
+            padding: 10px;
             background: black;
             color: #ffce2e;
             display: flex;
-            align-items: center;
+            flex-direction: column;
         }
 
-        #matrix div {
+        #user-input div {
             margin: 5px;
-        }
-
-        .matrix tr:hover {
-            background: #7ab1e8;
         }
 
         .matrix td {
@@ -52,9 +54,10 @@
         }
 
         .matrix input {
-            width: 20px;
+            width: 30px;
             height: 20px;
             background: black;
+            border: none;
         }
 
         #row-ops {
@@ -67,58 +70,106 @@
             border: 1px solid white;
         }
 
-        .slidecontainer {
-            position: absolute;
-            left: 35px;
-            bottom: 14px;
+        .operations-tab input[type="number"] {
+            width: 50px;
+            margin: 0 10px;
+        }
+        .operations-tab {
+            display: flex;
+        }
+
+        .slider {
+            margin: 5px;
+            width: 75%;
         }
 
     </style>
 </head>
 <body>
-<canvas id="glCanvas">
-</canvas>
-<div class="slidecontainer">
-    <input type="range" min="1" max="100" value="50" class="slider" id="factor-slider">
-    <span id="factor"></span>
-</div>
-<div id="matrix">
-    <div>
-        <table class="matrix" id="input-matrix">
-            <tr class="yellow row-1">
-                <td><input type="text" value=1></td>
-                <td><input type="text" value=2></td>
-                <td><input type="text" value=3></td>
-            </tr>
-            <tr class="blue row-2">
-                <td><input type="text" value="5"></td>
-                <td><input type="text" value="6"></td>
-                <td><input type="text" value="7"></td>
-            </tr>
-            <tr class="pink row-3">
-                <td><input type="text" value="9"></td>
-                <td><input type="text" value="10"></td>
-                <td><input type="text" value="11"></td>
-            </tr>
-        </table>
-    </div>
-    <div>=</div>
-    <div align=center>
-        <table class="matrix" id="ans-vector">
-            <tr class="yellow row-1">
-                <td><input type="text" value=4></td>
-            </tr>
-            <tr class="blue row-2">
-                <td><input type="text" value=8></td>
-            </tr>
-            <tr class="pink row-3">
-                <td><input type="text" value=12></td>
-            </tr>
-        </table>
-    </div>
-    <div id="row-ops">
-        <button>Row operation</button>
-        <button>Row division</button>
+<div class="d-flex align-content-stretch align-items-stretch w-100 h-100">
+    <canvas id="glCanvas">
+    </canvas>
+    <div id="user-input">
+        <div class="d-flex align-items-center">
+            <div>
+                <table class="matrix" id="input-matrix">
+                    <tr class="yellow row-1">
+                        <td><input type="text" value=1></td>
+                        <td><input type="text" value=2></td>
+                        <td><input type="text" value=3></td>
+                    </tr>
+                    <tr class="blue row-2">
+                        <td><input type="text" value="5"></td>
+                        <td><input type="text" value="6"></td>
+                        <td><input type="text" value="7"></td>
+                    </tr>
+                    <tr class="pink row-3">
+                        <td><input type="text" value="9"></td>
+                        <td><input type="text" value="10"></td>
+                        <td><input type="text" value="11"></td>
+                    </tr>
+                </table>
+            </div>
+            <div>*</div>
+            <div align=center>
+                <table class="matrix">
+                    <tr class="row-1" style="color: rgb(255, 0, 0)">
+                        <td>x</td>
+                    </tr>
+                    <tr class="row-2" style="color: rgb(0, 255, 0)">
+                        <td>y</td>
+                    </tr>
+                    <tr class="row-3" style="color: rgb(0, 0, 255)">
+                        <td>z</td>
+                    </tr>
+                </table>
+            </div>
+            <div>=</div>
+            <div align=center>
+                <table class="matrix" id="ans-vector">
+                    <tr class="yellow row-1">
+                        <td><input type="text" value=4></td>
+                    </tr>
+                    <tr class="blue row-2">
+                        <td><input type="text" value=8></td>
+                    </tr>
+                    <tr class="pink row-3">
+                        <td><input type="text" value=12></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div id="row-ops">
+            <button class="btn btn-secondary m-2 row-ops-btn" id="row-addition-btn">Row addition</button>
+            <div class="operations-tab align-items-baseline flex-column" id="row-addition" style="display: none">
+                <div class="d-flex">Add row <input id="add-row1" type="number" value="1" min="1" max="3" required>
+                    to row <input id="add-row2" type="number" value="2" min="1" max="3" required> </div>
+                <div class="w-100">With factor:</div>
+                <div class="d-flex w-100">
+                    <input type="range" min="-10" max="10" value="0" step="0.25" class="slider" id="add-factor-slider">
+                    <span id="add-factor"></span>
+                </div>
+                <button class="btn btn-warning" onclick="state.linearSystem.applyEdit()">Apply</button>
+            </div>
+
+            <button class="btn btn-secondary m-2 row-ops-btn" id="row-switching-btn">Row switching</button>
+            <div class="operations-tab align-items-baseline flex-column" id="row-switching" style="display: none">
+                <div class="d-flex">Switch row <input id="switch-row1" type="number" value="1" min="1" max="3" required>
+                    with row <input class="row-index-input" id="switch-row2" type="number" value="2" min="1" max="3" max="3" min="1" required> </div>
+                <button class="btn btn-warning" onclick="state.linearSystem.applyEdit()">Apply</button>
+            </div>
+
+            <button class="btn btn-secondary m-2 row-ops-btn" id="row-multiplication-btn">Row multiplication</button>
+            <div class="operations-tab align-items-baseline flex-column" id="row-multiplication" style="display: none">
+                <div class="d-flex">Multiply row <input id="mul-row" type="number" value="1" max="3" min="1" required></div>
+                <div class="w-100">With factor:</div>
+                <div class="d-flex w-100">
+                    <input type="range" min="-10" max="10" value="1" step="0.25" class="slider" id="mul-factor-slider">
+                    <span id="mul-factor"></span>
+                </div>
+                <button class="btn btn-warning" onclick="state.linearSystem.applyEdit()">Apply</button>
+            </div>
+        </div>
     </div>
 </div>
 </body>
@@ -171,13 +222,15 @@ void main() {
 
 
 </script>
-<script src="../js/jquery-3.4.1.min.js"></script>
 <script src="../js/gl-matrix-min.js"></script>
 <script src="../js/webgl-utils.js"></script>
 <script src="../js/vector-math.js"></script>
 <script src="../js/geometry.js"></script>
 <script src="../js/globals.js"></script>
+<script src="../js/matrix-calculations.js"></script>
 <script src="Camera.js"></script>
 <script src="webglfunctions.js"></script>
+<script src="controls.js"></script>
+<script src="linear-systems.js"></script>
 <script src="main.js"></script>
 </html>
