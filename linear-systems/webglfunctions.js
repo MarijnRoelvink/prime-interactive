@@ -2,7 +2,7 @@ function clearScreen(gl) {
     // Set clear color to black, fully opaque
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
     // Clear the color buffer with specified clear color
-    gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     gl.enable(gl.DEPTH_TEST);
     gl.depthFunc(gl.LEQUAL);
     gl.depthRange(0, 100);
@@ -10,7 +10,7 @@ function clearScreen(gl) {
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 }
 
-function loadGeometry(gl, programInfo, vertices, normals = []) {
+function loadGeometry(gl, programInfo, vertices, normals = [], texCoordinates = []) {
     gl.useProgram(programInfo.program);
     let vertexBuffer = gl.createBuffer();
     //vertexBuffer is now current buffer retrieve data from
@@ -21,7 +21,7 @@ function loadGeometry(gl, programInfo, vertices, normals = []) {
     gl.vertexAttribPointer(programInfo.attribLocations.pos, 3, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(programInfo.attribLocations.pos);
 
-    if(normals) {
+    if (normals) {
         let normalBuffer = gl.createBuffer();
         //vertexBuffer is now current buffer retrieve data from
         gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
@@ -30,6 +30,16 @@ function loadGeometry(gl, programInfo, vertices, normals = []) {
         //binds the current vertex buffer to the pos attribute in the shader
         gl.vertexAttribPointer(programInfo.attribLocations.norm, 3, gl.FLOAT, false, 0, 0);
         gl.enableVertexAttribArray(programInfo.attribLocations.norm);
+    }
+    if (texCoordinates) {
+        let texBuffer = gl.createBuffer();
+        //vertexBuffer is now current buffer retrieve data from
+        gl.bindBuffer(gl.ARRAY_BUFFER, texBuffer);
+        //insert data into the current normal buffer
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(texCoordinates), gl.STATIC_DRAW);
+        //binds the current vertex buffer to the pos attribute in the shader
+        gl.vertexAttribPointer(programInfo.attribLocations.tex, 2, gl.FLOAT, false, 0, 0);
+        gl.enableVertexAttribArray(programInfo.attribLocations.tex);
     }
 }
 
@@ -40,7 +50,22 @@ function drawBox(gl, programInfo, color, dimensions, base) {
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, vertices.length / 3);
 }
 
-function drawAxes(gl, programInfo) {
+function drawText(gl, programInfo, text, color, points) {
+    let vertices = getPlane(...points);
+    loadGeometry(gl, programInfo, vertices, [], getTexCoordinatesFromPlane());
+
+    let texture = loadTexture(gl, makeTextCanvas(text, color, 32*text.length, 32));
+
+    gl.uniform1f(programInfo.uniformLocations.kd, 0);
+    gl.uniform1f(programInfo.uniformLocations.ka, 0.8);
+    gl.uniform1i(programInfo.uniformLocations.texture, 0);
+
+    gl.uniform1i(programInfo.uniformLocations.textureOn, true);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, vertices.length / 3);
+    gl.uniform1i(programInfo.uniformLocations.textureOn, false);
+}
+
+function drawAxes(gl, programInfo, state) {
     let thickness = 0.1;
     let length = 50;
 
@@ -50,44 +75,63 @@ function drawAxes(gl, programInfo) {
     drawBox(gl, programInfo, [1, 0, 0], [length, thickness, thickness], [length / 2, 0, 0]);
     drawBox(gl, programInfo, [0, 1, 0], [thickness, length, thickness], [0, length / 2, 0]);
     drawBox(gl, programInfo, [0, 0, 1], [thickness, thickness, length], [0, 0, length / 2]);
-
 }
 
 function drawPlanes(gl, programInfo, state) {
-    let radius = 5*state.camera.zoom;
+    let radius = state.boundingBox * state.camera.zoom;
 
     gl.uniform1f(programInfo.uniformLocations.kd, 0.6);
     gl.uniform1f(programInfo.uniformLocations.ka, 0.2);
 
-    for(let i = 0; i < 3; i ++) {
+    for (let i = 0; i < 3; i++) {
         let vertices;
         let planes = state.linearSystem.planes;
         let x = planes[i][0] !== 0;
         let y = planes[i][1] !== 0;
         let z = planes[i][2] !== 0;
-        if(z) {
+        if (z) {
             vertices = getPlane(new Point(radius, radius, getZ(radius, radius, planes[i])),
                 new Point(-radius, radius, getZ(-radius, radius, planes[i])),
                 new Point(-radius, -radius, getZ(-radius, -radius, planes[i])),
                 new Point(radius, -radius, getZ(radius, -radius, planes[i])));
-        } else if(y) {
+        } else if (y) {
             vertices = getPlane(new Point(radius, getY(radius, radius, planes[i]), radius),
                 new Point(-radius, getY(-radius, radius, planes[i]), radius),
                 new Point(-radius, getY(-radius, -radius, planes[i]), -radius),
                 new Point(radius, getY(radius, -radius, planes[i]), -radius));
         } else if (x) {
             vertices = getPlane(new Point(getX(radius, radius, planes[i]), radius, radius),
-                new Point(getX(-radius, radius, planes[i]), -radius,  radius),
+                new Point(getX(-radius, radius, planes[i]), -radius, radius),
                 new Point(getX(-radius, -radius, planes[i]), -radius, -radius),
                 new Point(getX(radius, -radius, planes[i]), radius, -radius));
         }
-        if(vertices) {
+        if (vertices) {
             loadGeometry(gl, programInfo, vertices, getNormalsFromPlane(vertices));
-            gl.uniform4f(programInfo.uniformLocations.color, colors[i][0],colors[i][1],colors[i][2], 0.8);
+            gl.uniform4f(programInfo.uniformLocations.color, colors[i][0], colors[i][1], colors[i][2], 0.8);
             // gl.uniform4f(programInfo.uniformLocations.color, (i/2.0), 0, 1.0-i*0.5, 0.6);
             gl.drawArrays(gl.TRIANGLE_STRIP, 0, vertices.length / 3);
         }
     }
+}
+
+function drawBoundingBox(gl, programInfo, state) {
+    let boundingBox = state.boundingBox * state.camera.zoom;
+    let bbText = boundingBox.toFixed().toString();
+    drawText(gl, programInfo, bbText, "red",
+        [new Point(boundingBox, 0, 0),
+        new Point(boundingBox + 0.5 * state.camera.zoom*bbText.length, 0, 0),
+        new Point(boundingBox + 0.5 * state.camera.zoom*bbText.length, 0, 0.5 * state.camera.zoom),
+        new Point(boundingBox, 0, 0.5 * state.camera.zoom)]);
+    drawText(gl, programInfo, bbText, "blue",
+        [new Point( 0, 0.5 * state.camera.zoom*bbText.length, boundingBox),
+            new Point(0, 0, boundingBox),
+            new Point(0, 0, boundingBox + 0.5 * state.camera.zoom),
+            new Point( 0, 0.5 * state.camera.zoom*bbText.length, boundingBox + 0.5 * state.camera.zoom)]);
+    drawText(gl, programInfo, bbText, "green",
+        [new Point(0, boundingBox + 0.5 * state.camera.zoom*bbText.length, 0),
+            new Point(0, boundingBox, 0),
+            new Point(0, boundingBox, 0.5 * state.camera.zoom),
+            new Point(0, boundingBox + 0.5 * state.camera.zoom*bbText.length, 0.5 * state.camera.zoom)]);
 
 }
 

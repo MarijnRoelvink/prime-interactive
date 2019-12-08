@@ -5,7 +5,8 @@ var state = {
     dragging: false,
     mouseOrigin: [0, 0],
     camera: new Camera([12, 12, 0], [0, 0, 0], [0, 0, 1]),
-    linearSystem: new LinearSystem()
+    linearSystem: new LinearSystem(),
+    boundingBox: 5
 };
 
 
@@ -17,10 +18,12 @@ function init() {
         program: shaderProgram,
         attribLocations: {
             pos: gl.getAttribLocation(shaderProgram, 'pos'),
-            norm: gl.getAttribLocation(shaderProgram, 'norm')
+            norm: gl.getAttribLocation(shaderProgram, 'norm'),
+            tex: gl.getAttribLocation(shaderProgram, "tex")
         },
         uniformLocations: {
-            textoon: gl.getUniformLocation(shaderProgram, 'texToon'),
+            texture: gl.getUniformLocation(shaderProgram, 'texture'),
+            textureOn: gl.getUniformLocation(shaderProgram, 'textureOn'),
             mvp: gl.getUniformLocation(shaderProgram, 'mvp'),
             color: gl.getUniformLocation(shaderProgram, 'color'),
             lightPos: gl.getUniformLocation(shaderProgram, 'lightPos'),
@@ -42,6 +45,7 @@ function tick() {
 }
 
 function update() {
+    cleanConsole();
     state.linearSystem.update();
     updateSliders();
     state.camera.setZoom(100/parseFloat($("#zoom-slider").val()));
@@ -51,8 +55,9 @@ function draw() {
     clearScreen(gl);
     gl.useProgram(programInfo.program);
     setUniforms(gl, programInfo, state);
-    drawAxes(gl, programInfo);
+    drawAxes(gl, programInfo, state);
     drawPlanes(gl, programInfo, state);
+    drawBoundingBox(gl, programInfo, state);
 }
 
 init();

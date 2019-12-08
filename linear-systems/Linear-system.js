@@ -12,6 +12,15 @@ class LinearSystem {
         $("#user-input td input").each(function () {
             this.onchange = function () {
                 self.getSystemFromHTML();
+                console.log("change!");
+            }
+        });
+        $("#user-input td input").each(function () {
+            this.onfocus = function () {
+                if(self.currOperation !== "") {
+                    document.getElementById("error-audio").play();
+                    showMsg("Matrix changes are not allowed while performing row operations", "normal", 300);
+                }
             }
         });
         $("#row-addition-btn").click(function () {
@@ -48,22 +57,23 @@ class LinearSystem {
     }
 
     update() {
-        if (this.currOperation === "") {
-            return;
+        if (this.currOperation !== "") {
+            this.planes = [...this.oldPlanes];
+            switch (this.currOperation) {
+                case "row-addition":
+                    this.updateRowAddition();
+                    break;
+                case "row-switching":
+                    this.updateRowSwitching();
+                    break;
+                case "row-multiplication":
+                    this.updateRowMultiplication();
+                    break;
+            }
+            this.updateHTMLSystem();
         }
-        this.planes = [...this.oldPlanes];
-        switch (this.currOperation) {
-            case "row-addition":
-                this.updateRowAddition();
-                break;
-            case "row-switching":
-                this.updateRowSwitching();
-                break;
-            case "row-multiplication":
-                this.updateRowMultiplication();
-                break;
-        }
-        this.updateHTMLSystem();
+        this.checkEquations();
+
     }
 
     updateRowAddition() {
@@ -99,6 +109,10 @@ class LinearSystem {
         this.toggleTab(this.currOperation);
     }
 
+    cancelEdit() {
+        this.toggleTab(this.currOperation);
+    }
+
     toggleTab(value) {
         //set everything to non-active
         $(".operations-tab").each(function () {
@@ -108,11 +122,13 @@ class LinearSystem {
             $(this).removeClass("btn-primary").addClass("btn-secondary");
         });
 
-        if (this.currOperation === value) {
-            //cancel editing
+        let lastOperation = this.currOperation;
+        if (this.currOperation !== "") {
+            //cancel current editing
             this.planes = [...this.oldPlanes];
             this.currOperation = "";
-        } else {
+        }
+        if(lastOperation !== value) {
             //start editing
             this.oldPlanes = [...this.planes];
             this.currOperation = value;
@@ -120,5 +136,21 @@ class LinearSystem {
             $("#" + value + "-btn").removeClass("btn-secondary").addClass("btn-primary");
         }
         this.updateHTMLSystem();
+    }
+
+    checkEquations() {
+        for (let i = 0; i < 3; i++) {
+            let leftIsZero = true;
+            for (let j = 0; j < 3; j++) {
+                leftIsZero = leftIsZero && this.planes[i][j] === 0;
+            }
+            if(leftIsZero) {
+                if(this.planes[i][3] !== 0) {
+                    showMsg("Row " + (i+1) + " is inconsistent", "error");
+                } else {
+                    showMsg("Row " + (i+1) + " is zero");
+                }
+            }
+        }
     }
 }

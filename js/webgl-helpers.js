@@ -39,18 +39,31 @@ function loadShaders(gl, name, setCustomPos = 0){
     return shaderProgram;
 }
 
-function loadTexture(gl, programInfo, image) {
+function loadTexture(gl, image) {
     const texture = gl.createTexture();
 
     // Tell WebGL we want to affect texture unit 0
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, texture);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, image);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
 
     return texture;
+}
+
+function makeTextCanvas(text, color, width, height) {
+    let textCtx = document.createElement("canvas").getContext("2d");
+    textCtx.canvas.width  = width;
+    textCtx.canvas.height = height;
+    textCtx.font = "35px monospace";
+    textCtx.textAlign = "center";
+    textCtx.textBaseline = "middle";
+    textCtx.fillStyle = color;
+    textCtx.clearRect(0, 0, textCtx.canvas.width, textCtx.canvas.height);
+    textCtx.fillText(text, width / 2, height / 2);
+    return textCtx.canvas;
 }
 
 function initGL(canvas) {

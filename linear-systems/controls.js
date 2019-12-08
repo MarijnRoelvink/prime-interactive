@@ -67,3 +67,26 @@ function updateSliders() {
         $("#" + id + "-factor").html(this.value);
     });
 }
+
+function showMsg(msg, type = "normal", timeout = 0) {
+    let $div = $("<div>" + msg + "</div>")
+    if (type === "error") {
+        $div.addClass("red");
+    }
+    if (type === "normal") {
+        $div.addClass("yellow");
+    }
+    $div.attr("timeout", timeout);
+    $(".console").append($div);
+}
+
+function cleanConsole() {
+    $(".console div").each(function () {
+        let timeout = $(this).attr("timeout");
+        if (parseFloat(timeout) <= 0) {
+            $(this).remove();
+        } else {
+            $(this).attr("timeout", --timeout);
+        }
+    });
+}

@@ -9,3 +9,7 @@
 .pink, .pink input {
     color: #f87089;
 }
+
+.red, .red input{
+    color: red;
+}

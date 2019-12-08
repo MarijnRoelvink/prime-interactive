@@ -30,11 +30,24 @@ function getNormalsFromPlane(vertices) {
     return res;
 }
 
+/**
+ * D------C
+ * |      |
+ * |      |
+ * A------B
+ * @returns texCoordinates
+ */
+function getTexCoordinatesFromPlane() {
+    return [0, 1,
+        1, 1,
+        0, 0,
+        1, 0];
+}
+
 function getBox(width, height, depth, base) {
     var wRadius = width / 2;
     var hRadius = height / 2;
     var dRadius = depth / 2;
-    // Global variables for lighting calculations
     //     7-------6
     //  / |     / |
     // 3--4----2  5
@@ -56,7 +69,6 @@ function getBox(width, height, depth, base) {
     return vertices;
 }
 
-// Global variables for lighting calculations
 // D------C
 // |      |
 // |      |
