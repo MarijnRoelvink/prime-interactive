@@ -13,6 +13,10 @@ class Camera {
         this.updateMatrix();
     }
 
+    getPosition() {
+        return vec3.scale(vec3.create(), this.position, this.zoom);
+    }
+
     setTarget(target) {
         this.target = target;
         this.updateMatrix();
@@ -51,7 +55,7 @@ class Camera {
     }
 
     updateMatrix() {
-        this.matrix = mat4.lookAt(this.matrix, vec3.scale(vec3.create(), this.position, this.zoom), this.target, this.up);
+        this.matrix = mat4.lookAt(this.matrix, this.getPosition(), this.target, this.up);
     }
 
 }

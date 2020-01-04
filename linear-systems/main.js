@@ -12,6 +12,7 @@ var state = {
 
 function init() {
     canvas = document.getElementById('glCanvas');
+    $(canvas).css("width", (document.getElementsByTagName("body")[0].clientWidth - document.getElementById("user-input").clientWidth) + "px");
     gl = initGL(canvas);
     var shaderProgram = loadShaders(gl, "");
     programInfo = {
@@ -31,7 +32,8 @@ function init() {
             kd: gl.getUniformLocation(shaderProgram, 'kd'),
             scaleToScreen: gl.getUniformLocation(shaderProgram, 'scaleToScreen')
         },
-        screenDimension: canvas.height / canvas.width
+        screenDimension: canvas.height / canvas.width,
+        loadedTextures: {}
     };
     registerMouseEvents();
     registerKeyboardEvents();
@@ -48,7 +50,7 @@ function update() {
     cleanConsole();
     state.linearSystem.update();
     updateSliders();
-    state.camera.setZoom(100/parseFloat($("#zoom-slider").val()));
+    state.camera.setZoom(100 / parseFloat($("#zoom-slider").val()));
 }
 
 function draw() {
@@ -60,4 +62,7 @@ function draw() {
     drawBoundingBox(gl, programInfo, state);
 }
 
-init();
+$(document).ready(() => {
+    setTimeout(init, 500);
+});
+// init();

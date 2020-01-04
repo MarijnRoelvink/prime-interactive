@@ -5,7 +5,7 @@ function clearScreen(gl) {
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     gl.enable(gl.DEPTH_TEST);
     gl.depthFunc(gl.LEQUAL);
-    gl.depthRange(0, 100);
+    gl.depthRange(0, 200);
     gl.enable(gl.BLEND);
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 }
@@ -54,7 +54,11 @@ function drawText(gl, programInfo, text, color, points) {
     let vertices = getPlane(...points);
     loadGeometry(gl, programInfo, vertices, [], getTexCoordinatesFromPlane());
 
-    let texture = loadTexture(gl, makeTextCanvas(text, color, 32*text.length, 32));
+    if(!programInfo.loadedTextures[text]) {
+        programInfo.loadedTextures[text] = loadTexture(gl, makeTextCanvas(text, color, 32*text.length, 32));
+    }
+    let texture = programInfo.loadedTextures[text];
+    gl.bindTexture(gl.TEXTURE_2D, texture);
 
     gl.uniform1f(programInfo.uniformLocations.kd, 0);
     gl.uniform1f(programInfo.uniformLocations.ka, 0.8);
@@ -63,6 +67,13 @@ function drawText(gl, programInfo, text, color, points) {
     gl.uniform1i(programInfo.uniformLocations.textureOn, true);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, vertices.length / 3);
     gl.uniform1i(programInfo.uniformLocations.textureOn, false);
+}
+
+function drawLine(gl, programInfo, state, color, pointA, pointB) {
+    loadGeometry(gl, programInfo, pointA.concat(pointB))
+    gl.uniform4f(programInfo.uniformLocations.color, ...color, 1);
+    gl.drawArrays(gl.LINES, 0, 2);
+
 }
 
 function drawAxes(gl, programInfo, state) {
@@ -117,21 +128,27 @@ function drawPlanes(gl, programInfo, state) {
 function drawBoundingBox(gl, programInfo, state) {
     let boundingBox = state.boundingBox * state.camera.zoom;
     let bbText = boundingBox.toFixed().toString();
-    drawText(gl, programInfo, bbText, "red",
+    drawText(gl, programInfo, bbText, "white",
         [new Point(boundingBox, 0, 0),
         new Point(boundingBox + 0.5 * state.camera.zoom*bbText.length, 0, 0),
         new Point(boundingBox + 0.5 * state.camera.zoom*bbText.length, 0, 0.5 * state.camera.zoom),
         new Point(boundingBox, 0, 0.5 * state.camera.zoom)]);
-    drawText(gl, programInfo, bbText, "blue",
+    drawText(gl, programInfo, bbText, "white",
         [new Point( 0, 0.5 * state.camera.zoom*bbText.length, boundingBox),
             new Point(0, 0, boundingBox),
             new Point(0, 0, boundingBox + 0.5 * state.camera.zoom),
             new Point( 0, 0.5 * state.camera.zoom*bbText.length, boundingBox + 0.5 * state.camera.zoom)]);
-    drawText(gl, programInfo, bbText, "green",
+    drawText(gl, programInfo, bbText, "white",
         [new Point(0, boundingBox + 0.5 * state.camera.zoom*bbText.length, 0),
             new Point(0, boundingBox, 0),
             new Point(0, boundingBox, 0.5 * state.camera.zoom),
             new Point(0, boundingBox + 0.5 * state.camera.zoom*bbText.length, 0.5 * state.camera.zoom)]);
+
+    gl.uniform1f(programInfo.uniformLocations.kd, 0);
+    gl.uniform1f(programInfo.uniformLocations.ka, 0.9);
+    drawBox(gl, programInfo, [1, 1, 1], [0.05*1/state.camera.zoom, 0.12, 0.12], [boundingBox, 0, 0]);
+    drawBox(gl, programInfo, [1, 1, 1], [0.12, 0.05, 0.12], [0, boundingBox, 0]);
+    drawBox(gl, programInfo, [1, 1, 1], [0.12, 0.12, 0.05], [0, 0, boundingBox]);
 
 }
 
@@ -140,6 +157,6 @@ function setUniforms(gl, programInfo, state) {
     let mvp = mat4.mul(mat4.create(), proj, state.camera.matrix);
     gl.uniformMatrix4fv(programInfo.uniformLocations.mvp, false, mvp);
 
-    gl.uniform3f(programInfo.uniformLocations.lightPos, state.camera.position[0], state.camera.position[1], state.camera.position[2]);
+    gl.uniform3f(programInfo.uniformLocations.lightPos, state.camera.getPosition()[0], state.camera.getPosition()[1], state.camera.getPosition()[2]);
 }
 

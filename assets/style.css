@@ -13,3 +13,23 @@
 .red, .red input{
     color: red;
 }
+
+.light-gray {
+    background-color: #e3ddd8;
+    border-color: #e3ddd8;
+}
+
+.matrix-container:before, .matrix-container:after {
+    content: "";
+    top: 0;
+    border: 1px solid white;
+    width: 6px;
+}
+
+.matrix-container:before {
+    border-right: 0px;
+}
+
+.matrix-container:after {
+    border-left: 0px;
+}

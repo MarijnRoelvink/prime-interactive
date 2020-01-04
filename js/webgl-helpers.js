@@ -57,7 +57,7 @@ function makeTextCanvas(text, color, width, height) {
     let textCtx = document.createElement("canvas").getContext("2d");
     textCtx.canvas.width  = width;
     textCtx.canvas.height = height;
-    textCtx.font = "35px monospace";
+    textCtx.font = "40px monospace";
     textCtx.textAlign = "center";
     textCtx.textBaseline = "middle";
     textCtx.fillStyle = color;

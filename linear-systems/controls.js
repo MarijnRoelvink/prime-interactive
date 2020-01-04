@@ -41,7 +41,6 @@ function registerMouseEvents() {
 
 function registerKeyboardEvents() {
     window.onkeypress = function (event) {
-        console.log(event.key);
         var speed = 0.05;
         switch (event.key) {
             case "a" :

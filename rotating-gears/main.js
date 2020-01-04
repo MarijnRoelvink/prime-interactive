@@ -98,10 +98,15 @@ function update() {
 }
 function updateMatrix() {
     var angle = stat.rotation;
-    angle = Math.round(angle/Math.PI*100)/100;
+    angle = angle/Math.PI;
     document.querySelectorAll(".angle").forEach(function(el) {
         el.innerHTML = angle.toFixed(2) + "&pi;"
     });
+
+    document.getElementById("eval-1-1").innerHTML = Math.cos(angle*Math.PI).toFixed(2);
+    document.getElementById("eval-1-2").innerHTML = (-Math.sin(angle*Math.PI)).toFixed(2);
+    document.getElementById("eval-2-1").innerHTML = Math.sin(angle*Math.PI).toFixed(2);
+    document.getElementById("eval-2-2").innerHTML = Math.cos(angle*Math.PI).toFixed(2);
 }
 
 function draw() {
