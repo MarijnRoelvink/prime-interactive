@@ -66,6 +66,12 @@ function makeTextCanvas(text, color, width, height) {
     return textCtx.canvas;
 }
 
+/**
+ * Takes in an HTML canvas, initializes it to the canvas.clientWidth/Height.
+ * Then it initializes and returns the GL drawing context.
+ * @param canvas
+ * @returns {CanvasRenderingContext2D | WebGLRenderingContext}
+ */
 function initGL(canvas) {
     canvas.width = canvas.clientWidth;
     canvas.height = canvas.clientHeight;
