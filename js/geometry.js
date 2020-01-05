@@ -81,3 +81,16 @@ function getPlane(pA, pB, pC, pD) {
         pD.x, pD.y, pD.z
     ];
 }
+
+//    -----------
+//   |           |
+//   | height    |
+//   |           |
+// base----------
+//        width
+function get2DPlaneFromDim(width, height, base) {
+    return getPlane(new Point(...base),
+        new Point(base[0]+width, base[1], base[2]),
+        new Point(base[0]+width, base[1]+height, base[2]),
+        new Point(base[0], base[1]+height, base[2]))
+}

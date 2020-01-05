@@ -65,4 +65,3 @@ function draw() {
 $(document).ready(() => {
     setTimeout(init, 500);
 });
-// init();

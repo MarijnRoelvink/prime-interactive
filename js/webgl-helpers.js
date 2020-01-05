@@ -16,7 +16,7 @@ function loadShader(gl, type, source) {
     return shader;
 }
 
-function loadShaders(gl, name, setCustomPos = 0){
+function loadShaders(gl, name="", setCustomPos = 0){
 
     const vertexShader = loadShader(gl, gl.VERTEX_SHADER, document.getElementById(name+"vertex-shader").text);
     const fragmentShader = loadShader(gl, gl.FRAGMENT_SHADER, document.getElementById(name+"fragment-shader").text);
@@ -77,4 +77,34 @@ function initGL(canvas) {
         return;
     }
     return gl;
+}
+
+function initMesh(gl, programInfo, mesh) {
+    gl.useProgram(programInfo.program);
+
+    //load the mesh into buffers for vertex, normal and texture coordinates and add those to the mesh object
+    OBJ.initMeshBuffers(gl, mesh);
+    return loadMeshBuffers(gl, programInfo, mesh);
+
+}
+
+function loadMeshBuffers(gl, programInfo, mesh) {
+    gl.useProgram(programInfo.program);
+    //mesh.vertexBuffer is now current buffer retrieve data from
+    gl.bindBuffer(gl.ARRAY_BUFFER, mesh.vertexBuffer);
+    //binds the current vertex buffer to the pos attribute in the shader
+    gl.vertexAttribPointer(programInfo.attribLocations.pos, mesh.vertexBuffer.itemSize, gl.FLOAT, false, 0, 0);
+    gl.enableVertexAttribArray(programInfo.attribLocations.pos);
+
+    // if(programInfo.attribLocations.norm >= 0) {
+    //
+    // }
+    //mesh.normalBuffer is now current buffer retrieve data from
+    gl.bindBuffer(gl.ARRAY_BUFFER, mesh.normalBuffer);
+    //binds the current vertex buffer to the norm attribute in the shader
+    gl.vertexAttribPointer(programInfo.attribLocations.norm, mesh.normalBuffer.itemSize, gl.FLOAT, false, 0, 0);
+    gl.enableVertexAttribArray(programInfo.attribLocations.norm);
+
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, mesh.indexBuffer);
+    return mesh;
 }

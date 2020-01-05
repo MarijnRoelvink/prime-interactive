@@ -33,3 +33,15 @@
 .matrix-container:after {
     border-left: 0px;
 }
+
+.matrix input {
+    width: 35px;
+    height: 20px;
+    background: #2e2d2d;
+    border: none;
+}
+
+.matrix td {
+    padding: 5px;
+    text-align: center;
+}

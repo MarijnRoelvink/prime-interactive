@@ -1,9 +1,10 @@
 var gl;
 var canvas;
 var programInfo;
-var data = {};
-data.mesh = {};
-data.vector = {};
+var data = {
+    mesh: {},
+    vector: {}
+};
 var stat = {
     rotation: 0,
     dragging: false,

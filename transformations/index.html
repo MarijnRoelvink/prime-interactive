@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset=utf-8>
+    <title>PRIME interactive</title>
+    <script src="../js/jquery-3.4.1.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="../assets/bootstrap/css/bootstrap.css">
+    <script src="../assets/bootstrap/js/bootstrap.js"></script>
+    <!--    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">-->
+    <!--    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>-->
+    <link rel="stylesheet" type="text/css" href="../assets/fonts/cmun-bright.css">
+    <link rel="stylesheet" type="text/css" href="../assets/fonts/cmun-bright-semibold.css">
+    <link rel="stylesheet" type="text/css" href="../assets/style.css">
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            background: black;
+            color: white;
+        }
+
+        body {
+            margin: 0;
+            display: flex;
+            align-items: stretch;
+        }
+
+        canvas {
+            width: 50%;
+        }
+
+        .matrix-container {
+            position: absolute;
+            top: 40%;
+            left: 45%;
+            background-color: black;
+            color: #ffce2e;
+        }
+
+        #gl-left {
+            border-right: 1px solid #7ab1e8;
+        }
+
+        .matrix-container:before, .matrix-container:after {
+            border-color: #7ab1e8;
+        }
+
+    </style>
+</head>
+<body>
+<div class="d-flex align-items-stretch w-100 h-100">
+    <canvas id="gl-left"></canvas>
+    <canvas id="gl-right"></canvas>
+    <div class="d-flex matrix-container">
+        <table id="transformation-matrix" class="matrix yellow">
+            <tr>
+                <td><input type="text" id="m-1-1"></td>
+                <td><input type="text" id="m-1-2"></td>
+            </tr>
+            <tr>
+                <td><input type="text" id="m-2-1"></td>
+                <td><input type="text" id="m-2-2"></td>
+            </tr>
+        </table>
+    </div>
+</div>
+</body>
+<script id="vertex-shader" type="not-javascript">
+// Per-vertex attributes
+attribute vec3 pos; // World-space position
+attribute vec3 norm; // World-space position
+
+uniform mat4 mvp;
+
+void main() {
+	// Transform 3D position into on-screen position
+	gl_Position = mvp*vec4(pos+ norm * vec3(0.0, 0.0, 0.0), 1);
+}
+
+</script>
+<script id="fragment-shader" type="not-javascript">
+
+uniform highp vec4 color;
+
+void main() {
+       gl_FragColor = color;
+}
+</script>
+<script src="../js/webgl-obj-loader.js"></script>
+<script src="../js/webgl-helpers.js"></script>
+<script src="../js/gl-matrix-min.js"></script>
+<script src="../js/webgl-utils.js"></script>
+<script src="../js/vector-math.js"></script>
+<script src="../js/geometry.js"></script>
+<script src="../js/globals.js"></script>
+<script src="../js/matrix-calculations.js"></script>
+<script src="Matrix.js"></script>
+<script src="webglfunctions.js"></script>
+<script src="controls.js"></script>
+<script src="main.js"></script>
+</html>
