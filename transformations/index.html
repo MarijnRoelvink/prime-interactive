@@ -30,12 +30,18 @@
             width: 50%;
         }
 
-        .matrix-container {
+        #input-container {
             position: absolute;
             top: 40%;
             left: 45%;
-            background-color: black;
             color: #ffce2e;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        .matrix-container {
+            background-color: black;
         }
 
         #gl-left {
@@ -46,23 +52,35 @@
             border-color: #7ab1e8;
         }
 
+        #lock img{
+            height: 17px;
+        }
+        #lock {
+            margin: 3px;
+            padding: 0;
+            display: flex;
+        }
+
     </style>
 </head>
 <body>
 <div class="d-flex align-items-stretch w-100 h-100">
     <canvas id="gl-left"></canvas>
     <canvas id="gl-right"></canvas>
-    <div class="d-flex matrix-container">
-        <table id="transformation-matrix" class="matrix yellow">
-            <tr>
-                <td><input type="text" id="m-1-1"></td>
-                <td><input type="text" id="m-1-2"></td>
-            </tr>
-            <tr>
-                <td><input type="text" id="m-2-1"></td>
-                <td><input type="text" id="m-2-2"></td>
-            </tr>
-        </table>
+    <div id="input-container">
+        <button id="lock" class="btn" onclick="state.matrix.toggleMode()"><img src="../assets/icons/locked.svg"></button>
+        <div class="d-flex matrix-container">
+            <table id="transformation-matrix" class="matrix yellow">
+                <tr>
+                    <td><input type="text" id="m-1-1"></td>
+                    <td><input type="text" id="m-1-2"></td>
+                </tr>
+                <tr>
+                    <td><input type="text" id="m-2-1"></td>
+                    <td><input type="text" id="m-2-2"></td>
+                </tr>
+            </table>
+        </div>
     </div>
 </div>
 </body>

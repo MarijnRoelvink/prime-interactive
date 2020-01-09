@@ -1,6 +1,8 @@
 class Matrix {
     constructor() {
-        this.matrix = [[1, 0], [0, 1]];
+        this.matrix = [[1, 0],
+            [0, 1]];
+        this.locked = true;
         this.registerHTMLChanges();
         this.updateHTMLSystem();
     }
@@ -29,7 +31,22 @@ class Matrix {
     }
 
     update() {
-        this.updateHTMLSystem();
+    }
+
+    getGlMatrix() {
+        //glMatrix wants to receive values row-first instead of column first.
+        // For the sake of easy reading i feed them column first before transposing
+        return mat4.transpose(mat4.create(), mat4.fromValues(
+            this.matrix[0][0], this.matrix[0][1], 0, 0,
+            this.matrix[1][0], this.matrix[1][1], 0, 0,
+            0,                 0,                 1, 0,
+            0,                 0,                 0, 1));
+    }
+
+    toggleMode() {
+        this.locked = !this.locked;
+        $("#lock img").attr("src",
+            this.locked? "../assets/icons/locked.svg" : "../assets/icons/unlocked.svg");
     }
 
 

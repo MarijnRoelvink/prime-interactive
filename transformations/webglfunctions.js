@@ -37,7 +37,7 @@ function drawPlane(gl, programInfo, color, dimensions, base) {
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, vertices.length / 3);
 }
 
-function drawMesh(gl, programInfo, state, mesh) {
+function drawMesh(gl, programInfo, mesh) {
     gl.useProgram(programInfo.program);
     loadMeshBuffers(gl, programInfo, mesh);
     gl.drawElements(gl.TRIANGLES, mesh.indexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
@@ -50,10 +50,16 @@ function drawMesh(gl, programInfo, state, mesh) {
 //
 // }
 //
-function drawAxes(gl, programInfo, state) {
+function drawAxes(gl, programInfo) {
     let thickness = 0.01;
     let length = 1;
 
     drawPlane(gl, programInfo, [1, 0, 0], [length, thickness], [0, 0, 0]);
     drawPlane(gl, programInfo, [0, 1, 0], [thickness, length], [0, 0, 0]);
+}
+
+function drawVector(gl, programInfo, matrix) {
+    gl.uniform4f(programInfo.uniformLocations.color, 1.0, 1.0, 1.0, 1.0);
+    gl.uniformMatrix4fv(programInfo.uniformLocations.mvp, false, matrix);
+    drawMesh(gl, programInfo, programInfo.vector);
 }

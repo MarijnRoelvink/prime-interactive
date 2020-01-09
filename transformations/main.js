@@ -2,13 +2,17 @@ let gls = [];
 let canvases = [];
 let programInfos = [];
 let state = {
-    matrix: {}
+    matrix: {},
+    rotation: 0,
+    mouseOrigin: [0, 0],
+    dragging: false
 };
 
 
 function init(meshes) {
     state.matrix = new Matrix();
     let canvasIds = ["gl-left", "gl-right"];
+    let meshIds = ["vector-left", "vector-right"];
 
     for (let i = 0; i < 2; i++) {
         canvases[i] = document.getElementById(canvasIds[i]);
@@ -32,12 +36,11 @@ function init(meshes) {
             },
             screenDimension: canvas.height / canvas.width,
         };
-        //programInfos[i].vector = initMesh(gl, programInfos[i], meshes.vector);
+        programInfos[i].vector = initMesh(gl, programInfos[i], meshes[meshIds[i]]);
 
     }
 
-    // registerMouseEvents();
-    // registerKeyboardEvents();
+    registerMouseEvents(state);
     tick();
 }
 
@@ -48,11 +51,13 @@ function tick() {
 }
 
 function update() {
-    state.matrix.update();
+    state.matrix.update(state.rotation);
 }
 
 function draw() {
-    //TODO: i < 2
+    let matrices = [mat4.create(), state.matrix.getGlMatrix()];
+    let rotationMatrix = mat4.fromRotation(mat4.create(), state.rotation, [0, 0, 1]);
+
     for (let i = 0; i < 2; i++) {
         let gl = gls[i];
         let programInfo = programInfos[i];
@@ -60,13 +65,14 @@ function draw() {
         clearScreen(gl);
         gl.useProgram(programInfo.program);
         gl.uniformMatrix4fv(programInfo.uniformLocations.mvp, false, mat4.create());
-        drawAxes(gl, programInfo, state);
-        //gl.uniform4f(programInfo.uniformLocations.color, 1.0, 1.0, 1.0, 1.0);
-       // drawMesh(gl, programInfo, state, programInfo.vector);
+        drawAxes(gl, programInfo);
+        drawVector(gl, programInfo, mat4.mul(matrices[i], matrices[i], rotationMatrix));
+
     }
 
 }
 
 OBJ.downloadMeshes({
-    'vector': '../assets/mesh/vector.obj'
+    'vector-left': '../assets/mesh/vector.obj',
+    'vector-right': '../assets/mesh/vector.obj'
 }, init);
