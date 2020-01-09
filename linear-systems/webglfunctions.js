@@ -16,7 +16,7 @@ function loadGeometry(gl, programInfo, vertices, normals = [], texCoordinates = 
     //vertexBuffer is now current buffer retrieve data from
     gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
     //insert data into the current vertex buffer
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.DYNAMIC_DRAW);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
     //binds the current vertex buffer to the pos attribute in the shader
     gl.vertexAttribPointer(programInfo.attribLocations.pos, 3, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(programInfo.attribLocations.pos);
@@ -26,7 +26,7 @@ function loadGeometry(gl, programInfo, vertices, normals = [], texCoordinates = 
         //vertexBuffer is now current buffer retrieve data from
         gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
         //insert data into the current normal buffer
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(normals), gl.DYNAMIC_DRAW);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(normals), gl.STATIC_DRAW);
         //binds the current vertex buffer to the pos attribute in the shader
         gl.vertexAttribPointer(programInfo.attribLocations.norm, 3, gl.FLOAT, false, 0, 0);
         gl.enableVertexAttribArray(programInfo.attribLocations.norm);
@@ -36,7 +36,7 @@ function loadGeometry(gl, programInfo, vertices, normals = [], texCoordinates = 
         //vertexBuffer is now current buffer retrieve data from
         gl.bindBuffer(gl.ARRAY_BUFFER, texBuffer);
         //insert data into the current normal buffer
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(texCoordinates), gl.DYNAMIC_DRAW);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(texCoordinates), gl.STATIC_DRAW);
         //binds the current vertex buffer to the pos attribute in the shader
         gl.vertexAttribPointer(programInfo.attribLocations.tex, 2, gl.FLOAT, false, 0, 0);
         gl.enableVertexAttribArray(programInfo.attribLocations.tex);
