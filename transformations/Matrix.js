@@ -30,9 +30,6 @@ class Matrix {
         }
     }
 
-    update() {
-    }
-
     getGlMatrix() {
         //glMatrix wants to receive values row-first instead of column first.
         // For the sake of easy reading i feed them column first before transposing
@@ -47,6 +44,10 @@ class Matrix {
         this.locked = !this.locked;
         $("#lock img").attr("src",
             this.locked? "../assets/icons/locked.svg" : "../assets/icons/unlocked.svg");
+    }
+
+    getTransformedVector(vector) {
+        return vec3.transformMat4(vec3.create(), vector, this.getGlMatrix());
     }
 
 

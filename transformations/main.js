@@ -3,14 +3,16 @@ let canvases = [];
 let programInfos = [];
 let state = {
     matrix: {},
-    rotation: 0,
     mouseOrigin: [0, 0],
-    dragging: false
+    dragging: false,
+    vector: {}
 };
 
 
 function init(meshes) {
     state.matrix = new Matrix();
+    state.vector = new Vector();
+
     let canvasIds = ["gl-left", "gl-right"];
     let meshIds = ["vector-left", "vector-right"];
 
@@ -51,12 +53,23 @@ function tick() {
 }
 
 function update() {
-    state.matrix.update(state.rotation);
+    updateHTML();
+}
+
+function updateHTML() {
+    let vectors = [state.vector.vector, state.matrix.getTransformedVector(state.vector.vector)];
+    let ids = ["vl", "vr"];
+    for (let i = 0; i < 2; i++) {
+        $("#" + ids[i] + " input").each(function () {
+            let index = this.id.split("-");
+            let rowIndex = index[1] - 1;
+            $(this).val(Math.round(vectors[i][rowIndex]*100)/100);
+        });
+    }
 }
 
 function draw() {
     let matrices = [mat4.create(), state.matrix.getGlMatrix()];
-    let rotationMatrix = mat4.fromRotation(mat4.create(), state.rotation, [0, 0, 1]);
 
     for (let i = 0; i < 2; i++) {
         let gl = gls[i];
@@ -66,7 +79,7 @@ function draw() {
         gl.useProgram(programInfo.program);
         gl.uniformMatrix4fv(programInfo.uniformLocations.mvp, false, mat4.create());
         drawAxes(gl, programInfo);
-        drawVector(gl, programInfo, mat4.mul(matrices[i], matrices[i], rotationMatrix));
+        state.vector.draw(gl, state, programInfo, matrices[i]);
 
     }
 

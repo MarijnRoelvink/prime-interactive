@@ -22,6 +22,12 @@ function getVecSize(vec) {
     return Math.sqrt(res);
 }
 
+/**
+ * Calculate directed angle between two vectors
+ * @param vec1 2D vector
+ * @param vec2 2D vector
+ * @returns {number}
+ */
 function getVectorAngle(vec1, vec2) {
     var cosT = Math.min(dot(vec1, vec2)/(getVecSize(vec1)*getVecSize(vec2)), 1.0);
     var sinT = cross2d(vec1, vec2)/(getVecSize(vec1)*getVecSize(vec2));

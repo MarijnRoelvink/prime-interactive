@@ -44,9 +44,14 @@
             background-color: black;
         }
 
+        .top-bar {
+            border-bottom: 1px solid #7ab1e8;
+        }
+
         #gl-left {
             border-right: 1px solid #7ab1e8;
         }
+
 
         .matrix-container:before, .matrix-container:after {
             border-color: #7ab1e8;
@@ -61,25 +66,55 @@
             display: flex;
         }
 
+        .top-bar div{
+            margin: 5px;
+        }
+
     </style>
 </head>
 <body>
-<div class="d-flex align-items-stretch w-100 h-100">
-    <canvas id="gl-left"></canvas>
-    <canvas id="gl-right"></canvas>
-    <div id="input-container">
-        <button id="lock" class="btn" onclick="state.matrix.toggleMode()"><img src="../assets/icons/locked.svg"></button>
-        <div class="d-flex matrix-container">
-            <table id="transformation-matrix" class="matrix yellow">
-                <tr>
-                    <td><input type="text" id="m-1-1"></td>
-                    <td><input type="text" id="m-1-2"></td>
-                </tr>
-                <tr>
-                    <td><input type="text" id="m-2-1"></td>
-                    <td><input type="text" id="m-2-2"></td>
-                </tr>
-            </table>
+<div class="d-flex flex-column w-100 h-100">
+    <div class="top-bar">
+        <div class="d-flex justify-content-around">
+            <div>Domain</div>
+            <div>Co-Domain</div>
+        </div>
+        <div class="d-flex justify-content-center">
+            <div class="d-flex vector-container">
+                <table id="vl" class="vector yellow">
+                    <tr>
+                        <td><input type="text" id="vl-1"></td>
+                        <td><input type="text" id="vl-2"></td>
+                    </tr>
+                </table>
+            </div>
+            <div class="d-flex vector-container">
+                <table id="vr" class="vector yellow">
+                    <tr>
+                        <td><input type="text" id="vr-1"></td>
+                        <td><input type="text" id="vr-2"></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="d-flex align-items-stretch h-100">
+        <canvas id="gl-left"></canvas>
+        <canvas id="gl-right"></canvas>
+        <div id="input-container">
+            <button id="lock" class="btn" onclick="state.matrix.toggleMode()"><img src="../assets/icons/locked.svg"></button>
+            <div class="d-flex matrix-container">
+                <table id="transformation-matrix" class="matrix yellow">
+                    <tr>
+                        <td><input type="text" id="m-1-1"></td>
+                        <td><input type="text" id="m-1-2"></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" id="m-2-1"></td>
+                        <td><input type="text" id="m-2-2"></td>
+                    </tr>
+                </table>
+            </div>
         </div>
     </div>
 </div>
@@ -114,6 +149,7 @@ void main() {
 <script src="../js/globals.js"></script>
 <script src="../js/matrix-calculations.js"></script>
 <script src="Matrix.js"></script>
+<script src="Vector.js"></script>
 <script src="webglfunctions.js"></script>
 <script src="controls.js"></script>
 <script src="main.js"></script>

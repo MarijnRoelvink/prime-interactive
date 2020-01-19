@@ -57,9 +57,3 @@ function drawAxes(gl, programInfo) {
     drawPlane(gl, programInfo, [1, 0, 0], [length, thickness], [0, 0, 0]);
     drawPlane(gl, programInfo, [0, 1, 0], [thickness, length], [0, 0, 0]);
 }
-
-function drawVector(gl, programInfo, matrix) {
-    gl.uniform4f(programInfo.uniformLocations.color, 1.0, 1.0, 1.0, 1.0);
-    gl.uniformMatrix4fv(programInfo.uniformLocations.mvp, false, matrix);
-    drawMesh(gl, programInfo, programInfo.vector);
-}

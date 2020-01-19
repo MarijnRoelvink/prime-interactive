@@ -1,17 +1,17 @@
 function registerMouseEvents(state) {
-    let getRotationVector = function (x, y, el) {
-        return [x - el.offsetWidth / 2,
-            y - el.offsetHeight / 2];
+    let getRelativeVector = function(x, y, el) {
+        return [x/el.offsetWidth*2, y/el.offsetHeight*2];
     };
 
     let start = function (x, y, el) {
-        state.mouseOrigin = getRotationVector(x, y, el);
+        state.mouseOrigin = [x, y];
         state.dragging = true;
     };
     let move = function (x, y, el) {
         if (state.dragging) {
-            state.rotation += getVectorAngle(getRotationVector(x, y, el), state.mouseOrigin);
-            state.mouseOrigin = getRotationVector(x, y, el);
+            let movement = getRelativeVector(x - state.mouseOrigin[0], -(y - state.mouseOrigin[1]), el);
+            state.vector.transform(movement[0], movement[1]);
+            state.mouseOrigin = [x, y];
         }
     };
     let end = function () {
