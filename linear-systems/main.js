@@ -4,7 +4,7 @@ var programInfo;
 var state = {
     dragging: false,
     mouseOrigin: [0, 0],
-    camera: new Camera([12, 12, 0], [0, 0, 0], [0, 0, 1]),
+    camera: new Camera([12, 12, 4], [0, 0, 0], [0, 0, 1]),
     linearSystem: new LinearSystem(),
     boundingBox: 5
 };
