@@ -31,6 +31,6 @@ function drawAxes(gl, programInfo) {
     let thickness = 0.01;
     let length = 1;
 
-    drawPlane(gl, programInfo, [1, 0, 0], [length, thickness], [0, 0, 0]);
-    drawPlane(gl, programInfo, [0, 1, 0], [thickness, length], [0, 0, 0]);
+    drawPlane(gl, programInfo, [1, 1, 1], [length, thickness], [-thickness/2, -thickness/2, 0]);
+    drawPlane(gl, programInfo, [1, 1, 1], [thickness, length], [-thickness/2, -thickness/2, 0]);
 }

@@ -10,12 +10,11 @@ let state = {
 };
 
 
-function init(meshes) {
+function init() {
     state.matrix = new Matrix();
-    state.vectors = [new Vector([0.5, 0, 0]), new Vector([0, 0.5, 0])];
+    state.vectors = [new Vector([0.5, 0, 0], [0.48, 0.69, 0.91, 1.0]), new Vector([0, 0.5, 0], [1.0, 0.81, 0.18, 1.0])];
 
     let canvasIds = ["gl-left", "gl-right"];
-    let meshIds = ["vector-left", "vector-right"];
 
     for (let i = 0; i < 2; i++) {
         canvases[i] = document.getElementById(canvasIds[i]);
@@ -39,8 +38,6 @@ function init(meshes) {
             },
             screenDimension: canvas.height / canvas.width,
         };
-        programInfos[i].vector = initMesh(gl, programInfos[i], meshes[meshIds[i]]);
-
     }
 
     registerMouseEvents(state);
@@ -81,13 +78,10 @@ function draw() {
         gl.useProgram(programInfo.program);
         gl.uniformMatrix4fv(programInfo.uniformLocations.mvp, false, mat4.create());
         drawAxes(gl, programInfo);
-        state.vectors[0].draw(gl, state, programInfo, matrices[i], programInfo.vector);
-        state.vectors[1].draw(gl, state, programInfo, matrices[i], programInfo.vector);
+        state.vectors[0].draw(gl, programInfo, matrices[i]);
+        state.vectors[1].draw(gl, programInfo, matrices[i]);
     }
 
 }
 
-OBJ.downloadMeshes({
-    'vector-left': '../assets/mesh/vector_head.obj',
-    'vector-right': '../assets/mesh/vector_head.obj'
-}, init);
+init();
