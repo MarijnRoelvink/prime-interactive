@@ -79,13 +79,13 @@ function draw() {
         gl.useProgram(programInfo.program);
         gl.uniformMatrix4fv(programInfo.uniformLocations.mvp, false, mat4.create());
         drawAxes(gl, programInfo);
-        state.vector.draw(gl, state, programInfo, matrices[i]);
+        state.vector.draw(gl, state, programInfo, matrices[i], programInfo.vector);
 
     }
 
 }
 
 OBJ.downloadMeshes({
-    'vector-left': '../assets/mesh/vector.obj',
-    'vector-right': '../assets/mesh/vector.obj'
+    'vector-left': '../assets/mesh/vector_head.obj',
+    'vector-right': '../assets/mesh/vector_head.obj'
 }, init);

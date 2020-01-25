@@ -5,14 +5,19 @@ class Vector {
         this.color = color;
     }
 
-    getGLMatrix(matrix) {
-        let transformedVec = [...this.vector];
-        vec3.transformMat4(transformedVec, transformedVec, matrix);
-        let scale = vec3.len(transformedVec);
+    getXAxisAngle(transformedVec = this.vector) {
         let angle = vec3.angle(transformedVec, [1, 0, 0]);
         if(transformedVec[1] < 0) {
             angle = -angle;
         }
+        return angle
+    }
+
+    getGLMatrix(matrix) {
+        let transformedVec = [...this.vector];
+        vec3.transformMat4(transformedVec, transformedVec, matrix);
+        let scale = vec3.len(transformedVec);
+        let angle = this.getXAxisAngle(transformedVec);
         let res = mat4.create();
         res[0] = scale;
         let rotMat = mat4.fromRotation(mat4.create(), angle, [0, 0, 1]);
@@ -25,13 +30,14 @@ class Vector {
         this.vector[1] += y;
     }
 
-    draw(gl, state, programInfo, matrix) {
+    draw(gl, state, programInfo, matrix, mesh) {
         gl.uniform4f(programInfo.uniformLocations.color, ...this.color);
         gl.uniformMatrix4fv(programInfo.uniformLocations.mvp, false, this.getGLMatrix(matrix));
 
         let vertices = get2DPlaneFromDim(1, this.thickness, [0, 0, 0]);
         loadGeometry(gl, programInfo, vertices);
         gl.drawArrays(gl.TRIANGLE_STRIP, 0, vertices.length / 3);
+        drawMesh(gl, programInfo, mesh);
     }
 
     toString() {

@@ -10,8 +10,13 @@ function registerMouseEvents(state) {
     let move = function (x, y, el) {
         if (state.dragging) {
             let movement = getRelativeVector(x - state.mouseOrigin[0], -(y - state.mouseOrigin[1]), el);
-            state.vector.transform(movement[0], movement[1]);
+            if(el.id === "gl-left") {
+                state.vector.transform(movement[0], movement[1]);
+            } else if(el.id === "gl-right") {
+                state.matrix.addTransform(movement[0], movement[1], state.vector);
+            }
             state.mouseOrigin = [x, y];
+
         }
     };
     let end = function () {
