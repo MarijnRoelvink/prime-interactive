@@ -65,3 +65,18 @@ function getY(x, z, params) {
 function getX(y, z, params) {
     return (params[1]*y + params[2]*z - params[3])/(-1*params[0]);
 }
+
+/**
+ * solves the matrix equation A*X = B
+ * @param mA: mat2
+ * @param mB: mat2
+ * @returns mat2
+ */
+function solve2DMatrixEquation(mA, mB) {
+    if(mat2.determinant(mA)) {
+        return mat2.multiply(mat2.create(), mB, mat2.invert(mA, mA));
+    } else {
+        console.log("matrix A was not invertible");
+        return mat2.create();
+    }
+}

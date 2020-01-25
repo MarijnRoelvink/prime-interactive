@@ -5,13 +5,14 @@ let state = {
     matrix: {},
     mouseOrigin: [0, 0],
     dragging: false,
-    vector: {}
+    currFocus: 0,
+    vectors: []
 };
 
 
 function init(meshes) {
     state.matrix = new Matrix();
-    state.vector = new Vector();
+    state.vectors = [new Vector([0.5, 0, 0]), new Vector([0, 0.5, 0])];
 
     let canvasIds = ["gl-left", "gl-right"];
     let meshIds = ["vector-left", "vector-right"];
@@ -57,14 +58,15 @@ function update() {
 }
 
 function updateHTML() {
-    let vectors = [state.vector.vector, state.matrix.getTransformedVector(state.vector.vector)];
-    let ids = ["vl", "vr"];
-    for (let i = 0; i < 2; i++) {
-        $("#" + ids[i] + " input").each(function () {
-            let index = this.id.split("-");
-            let rowIndex = index[1] - 1;
-            $(this).val(Math.round(vectors[i][rowIndex]*100)/100);
-        });
+    let vectors = [state.vectors[0].vector, state.vectors[1].vector, state.matrix.getTransformedVector(state.vectors[0].vector), state.matrix.getTransformedVector(state.vectors[1].vector)];
+    let ids = ["vl-no1", "vl-no2", "vr-no1", "vr-no2"];
+    for (let i = 0; i < 4; i++) {
+            $("#" + ids[i] + " input").each(function () {
+                let index = parseInt(this.className.split(/\s/).filter(( cn ) => cn.indexOf('v-') === 0)[0].split("-")[1]);
+                index--;
+                let check = vectors[i][index];
+                $(this).val(Math.round(vectors[i][index]*100)/100);
+            });
     }
 }
 
@@ -79,8 +81,8 @@ function draw() {
         gl.useProgram(programInfo.program);
         gl.uniformMatrix4fv(programInfo.uniformLocations.mvp, false, mat4.create());
         drawAxes(gl, programInfo);
-        state.vector.draw(gl, state, programInfo, matrices[i], programInfo.vector);
-
+        state.vectors[0].draw(gl, state, programInfo, matrices[i], programInfo.vector);
+        state.vectors[1].draw(gl, state, programInfo, matrices[i], programInfo.vector);
     }
 
 }
