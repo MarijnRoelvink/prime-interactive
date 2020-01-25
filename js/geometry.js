@@ -30,6 +30,14 @@ function getNormalsFromPlane(vertices) {
     return res;
 }
 
+function getNormalsFromBox(vertices) {
+    let res = [];
+    for(let i = 0; i < 6; i++) {
+        res = res.concat(getNormalsFromPlane(vertices.slice(i*12, (i+1)*12)));
+    }
+    return res;
+}
+
 /**
  * D------C
  * |      |
@@ -42,6 +50,14 @@ function getTexCoordinatesFromPlane() {
         1, 1,
         0, 0,
         1, 0];
+}
+
+
+function getZeros(size) {
+    let arr = [];
+    arr.length = size;
+    arr.fill(0);
+    return arr;
 }
 
 function getBox(width, height, depth, base) {

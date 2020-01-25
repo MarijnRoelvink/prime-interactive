@@ -224,13 +224,11 @@ void main() {
     if(textureOn) {
        highp vec4 texColor  = texture2D(texture, fragTex);
        if(texColor.x == 0.0 && texColor.y == 0.0 && texColor.z == 0.0) {
-       //if(texColor.xyz == vec3(0.0, 0.0, 0.0)) {
         texColor = vec4(1.0, 1.0, 1.0, 0.0);
        }
        gl_FragColor = texColor;
     } else {
        gl_FragColor = vec4(color.rgb * ka + kd * abs(dot(normalize(lightPos - fragPos), fragNorm)) * color.rgb, color.a);
-
     }
 }
 

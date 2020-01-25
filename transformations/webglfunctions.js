@@ -7,29 +7,6 @@ function clearScreen(gl) {
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 }
 
-function loadGeometry(gl, programInfo, vertices, normals = [], texCoordinates = []) {
-    gl.useProgram(programInfo.program);
-    let vertexBuffer = gl.createBuffer();
-    //vertexBuffer is now current buffer retrieve data from
-    gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-    //insert data into the current vertex buffer
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.DYNAMIC_DRAW);
-    //binds the current vertex buffer to the pos attribute in the shader
-    gl.vertexAttribPointer(programInfo.attribLocations.pos, 3, gl.FLOAT, false, 0, 0);
-    gl.enableVertexAttribArray(programInfo.attribLocations.pos);
-
-    if (normals.length) {
-        let normalBuffer = gl.createBuffer();
-        //vertexBuffer is now current buffer retrieve data from
-        gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
-        //insert data into the current normal buffer
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(normals), gl.DYNAMIC_DRAW);
-        //binds the current vertex buffer to the pos attribute in the shader
-        gl.vertexAttribPointer(programInfo.attribLocations.norm, 3, gl.FLOAT, false, 0, 0);
-        gl.enableVertexAttribArray(programInfo.attribLocations.norm);
-    }
-}
-
 function drawPlane(gl, programInfo, color, dimensions, base) {
     let vertices = get2DPlaneFromDim(...dimensions, base);
     loadGeometry(gl, programInfo, vertices);

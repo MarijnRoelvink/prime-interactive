@@ -53,6 +53,53 @@ function loadTexture(gl, image) {
     return texture;
 }
 
+/**
+ * loads geometry into vertexbuffers
+ * @param gl: webgl context
+ * @param programInfo: {program, attribLocations.pos, attribLocations.norm?, attribLocations.tex?}
+ * @param vertices: vertices to load into vertexbuffer
+ * @param normals: normals to load into normalbuffer, optional
+ * @param texCoordinates: texCoordinates to load into texturebuffer, optional
+ */
+function loadGeometry(gl, programInfo, vertices, normals = [], texCoordinates = []) {
+    gl.useProgram(programInfo.program);
+    let vertexBuffer = gl.createBuffer();
+    //vertexBuffer is now current buffer retrieve data from
+    gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+    //insert data into the current vertex buffer
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+    //binds the current vertex buffer to the pos attribute in the shader
+    gl.vertexAttribPointer(programInfo.attribLocations.pos, 3, gl.FLOAT, false, 0, 0);
+    gl.enableVertexAttribArray(programInfo.attribLocations.pos);
+
+    if(typeof programInfo.attribLocations.norm !== 'undefined') {
+        if(normals.length === 0) {
+            normals = getZeros(vertices.length);
+        }
+        let normalBuffer = gl.createBuffer();
+        //vertexBuffer is now current buffer retrieve data from
+        gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
+        //insert data into the current normal buffer
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(normals), gl.STATIC_DRAW);
+        //binds the current vertex buffer to the pos attribute in the shader
+        gl.vertexAttribPointer(programInfo.attribLocations.norm, 3, gl.FLOAT, false, 0, 0);
+        gl.enableVertexAttribArray(programInfo.attribLocations.norm);
+    }
+    if (typeof programInfo.attribLocations.tex !== 'undefined') {
+        if(texCoordinates.length === 0) {
+            texCoordinates = getZeros(vertices.length/3*2);
+        }
+        let texBuffer = gl.createBuffer();
+        //vertexBuffer is now current buffer retrieve data from
+        gl.bindBuffer(gl.ARRAY_BUFFER, texBuffer);
+        //insert data into the current normal buffer
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(texCoordinates), gl.STATIC_DRAW);
+        //binds the current vertex buffer to the pos attribute in the shader
+        gl.vertexAttribPointer(programInfo.attribLocations.tex, 2, gl.FLOAT, false, 0, 0);
+        gl.enableVertexAttribArray(programInfo.attribLocations.tex);
+    }
+}
+
 function makeTextCanvas(text, color, width, height) {
     let textCtx = document.createElement("canvas").getContext("2d");
     textCtx.canvas.width  = width;

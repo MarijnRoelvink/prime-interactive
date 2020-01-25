@@ -10,42 +10,9 @@ function clearScreen(gl) {
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 }
 
-function loadGeometry(gl, programInfo, vertices, normals = [], texCoordinates = []) {
-    gl.useProgram(programInfo.program);
-    let vertexBuffer = gl.createBuffer();
-    //vertexBuffer is now current buffer retrieve data from
-    gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-    //insert data into the current vertex buffer
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
-    //binds the current vertex buffer to the pos attribute in the shader
-    gl.vertexAttribPointer(programInfo.attribLocations.pos, 3, gl.FLOAT, false, 0, 0);
-    gl.enableVertexAttribArray(programInfo.attribLocations.pos);
-
-    if (normals) {
-        let normalBuffer = gl.createBuffer();
-        //vertexBuffer is now current buffer retrieve data from
-        gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
-        //insert data into the current normal buffer
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(normals), gl.STATIC_DRAW);
-        //binds the current vertex buffer to the pos attribute in the shader
-        gl.vertexAttribPointer(programInfo.attribLocations.norm, 3, gl.FLOAT, false, 0, 0);
-        gl.enableVertexAttribArray(programInfo.attribLocations.norm);
-    }
-    if (texCoordinates) {
-        let texBuffer = gl.createBuffer();
-        //vertexBuffer is now current buffer retrieve data from
-        gl.bindBuffer(gl.ARRAY_BUFFER, texBuffer);
-        //insert data into the current normal buffer
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(texCoordinates), gl.STATIC_DRAW);
-        //binds the current vertex buffer to the pos attribute in the shader
-        gl.vertexAttribPointer(programInfo.attribLocations.tex, 2, gl.FLOAT, false, 0, 0);
-        gl.enableVertexAttribArray(programInfo.attribLocations.tex);
-    }
-}
-
 function drawBox(gl, programInfo, color, dimensions, base) {
     let vertices = getBox(dimensions[0], dimensions[1], dimensions[2], base);
-    loadGeometry(gl, programInfo, vertices);
+    loadGeometry(gl, programInfo, vertices, getNormalsFromBox(vertices));
     gl.uniform4f(programInfo.uniformLocations.color, color[0], color[1], color[2], 1);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, vertices.length / 3);
 }
@@ -146,7 +113,7 @@ function drawBoundingBox(gl, programInfo, state) {
 
     gl.uniform1f(programInfo.uniformLocations.kd, 0);
     gl.uniform1f(programInfo.uniformLocations.ka, 0.9);
-    drawBox(gl, programInfo, [1, 1, 1], [0.05*1/state.camera.zoom, 0.12, 0.12], [boundingBox, 0, 0]);
+    drawBox(gl, programInfo, [1, 1, 1], [0.05/state.camera.zoom, 0.12, 0.12], [boundingBox, 0, 0]);
     drawBox(gl, programInfo, [1, 1, 1], [0.12, 0.05, 0.12], [0, boundingBox, 0]);
     drawBox(gl, programInfo, [1, 1, 1], [0.12, 0.12, 0.05], [0, 0, boundingBox]);
 
