@@ -33,10 +33,6 @@ function registerMouseEvents() {
     };
     canvas.onmouseup = end;
     canvas.ontouchend = end;
-
-    window.onresize = function (event) {
-        programInfo.screenDimension = canvas.clientHeight / canvas.clientWidth;
-    };
 }
 
 function registerKeyboardEvents() {
@@ -54,7 +50,6 @@ function registerKeyboardEvents() {
                 break;
             case "w" :
                 state.camera.gumball(0, speed);
-
                 break;
         }
     };

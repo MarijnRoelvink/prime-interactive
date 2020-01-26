@@ -120,7 +120,7 @@ function drawBoundingBox(gl, programInfo, state) {
 }
 
 function setUniforms(gl, programInfo, state) {
-    let proj = mat4.perspective(mat4.create(), 45.0, canvas.width / canvas.height, 0.1, 100.0);
+    let proj = mat4.perspective(mat4.create(), 45.0, canvas.clientWidth / canvas.clientHeight, 0.1, 100.0);
     let mvp = mat4.mul(mat4.create(), proj, state.camera.matrix);
     gl.uniformMatrix4fv(programInfo.uniformLocations.mvp, false, mvp);
 
