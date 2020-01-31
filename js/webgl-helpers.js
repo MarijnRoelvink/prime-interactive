@@ -53,6 +53,18 @@ function loadTexture(gl, image) {
     return texture;
 }
 
+// Initialize a texture and load an image.
+// When the image finished loading copy it into the texture.
+//
+function loadImgTexture(gl, url, callback) {
+    const image = new Image();
+    image.onload = function() {
+        let texture = loadTexture(gl, image);
+        callback(texture);
+    };
+    image.src = url;
+}
+
 /**
  * loads geometry into vertexbuffers
  * @param gl: webgl context
@@ -98,6 +110,16 @@ function loadGeometry(gl, programInfo, vertices, normals = [], texCoordinates = 
         gl.vertexAttribPointer(programInfo.attribLocations.tex, 2, gl.FLOAT, false, 0, 0);
         gl.enableVertexAttribArray(programInfo.attribLocations.tex);
     }
+}
+
+//Loads an image with the given url, when the image is loaded it executes the callback
+//with as parameters the image
+function loadImage(url, callback) {
+    let image = new Image();
+    image.onload = function () {
+        callback();
+    };
+    image.src = url;
 }
 
 function makeTextCanvas(text, color, width, height) {

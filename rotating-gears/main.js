@@ -27,17 +27,21 @@ function init(meshes) {
         },
         attribLocations: {
             pos: gl.getAttribLocation(shaderProgram, 'pos'),
-            norm: gl.getAttribLocation(shaderProgram, 'norm')
+            norm: gl.getAttribLocation(shaderProgram, 'norm'),
+            tex: gl.getAttribLocation(shaderProgram, 'tex')
         },
         uniformLocations: {
-            textoon: gl.getUniformLocation(shaderProgram, 'texToon'),
+            texture: gl.getUniformLocation(shaderProgram, 'texture'),
+            texOn: gl.getUniformLocation(shaderProgram, 'texOn'),
             rotation: gl.getUniformLocation(shaderProgram, 'rotation'),
             renderLines: gl.getUniformLocation(shaderProgram, 'renderLines'),
             scaleToScreen: gl.getUniformLocation(shaderProgram, 'scaleToScreen')
         },
         screenDimension: canvas.height/canvas.width
     };
-    data.mesh = initMesh(gl,  programInfo, meshes.gears);
+    loadImgTexture(gl, "../assets/img/huisje_geel.png", (tex) => {
+       data.house = tex;
+    });
     data.vector = initMesh(gl, programInfo, meshes.vector);
     stat.rotation = 0;
 
@@ -113,7 +117,8 @@ function updateMatrix() {
 function draw() {
     clearScreen(gl);
 
-    drawMesh(gl, programInfo, stat, data.mesh);
+    setUniforms(gl, programInfo, stat);
+    drawHouse(gl, programInfo, stat);
     drawMesh(gl, programInfo, stat, data.vector, true);
     drawCircle(gl, programInfo, stat);
 
@@ -121,6 +126,5 @@ function draw() {
 }
 
 OBJ.downloadMeshes({
-    'gears': '../assets/mesh/Gear.obj',
     'vector': '../assets/mesh/vector.obj'
 }, init);

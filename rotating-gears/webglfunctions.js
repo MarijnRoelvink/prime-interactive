@@ -8,14 +8,12 @@ function clearScreen(gl) {
 function drawMesh(gl, programInfo, stat, mesh, renderLines = false) {
     gl.useProgram(programInfo.program);
     loadMeshBuffers(gl, programInfo, mesh);
-    gl.uniformMatrix3fv(programInfo.uniformLocations.scaleToScreen, false, scaleToScreen(programInfo.screenDimension));
-    gl.uniformMatrix3fv(programInfo.uniformLocations.rotation, false,  rotateMatrix(stat.rotation));
     gl.uniform1i(programInfo.uniformLocations.renderLines, renderLines);
     gl.drawElements(gl.TRIANGLES, mesh.indexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
 }
 
 function loadCircle(gl, programInfo, rotation) {
-    var radius = 0.62;
+    var radius = 0.7;
     var numPoints = Math.abs(Math.floor(100*(rotation/(2*Math.PI))));
 
     var vertices = [];
@@ -37,6 +35,18 @@ function loadCircle(gl, programInfo, rotation) {
 
 }
 
+function drawHouse(gl, programInfo, stat) {
+    if(typeof data.house !== 'undefined') {
+        let vertices = get2DPlaneFromDim(0.7, 0.7, [0, 0, 0]);
+        let texCoor = getTexCoordinatesFromPlane(vertices);
+        loadGeometry(gl, programInfo, vertices, [], texCoor);
+        gl.uniform1i(programInfo.uniformLocations.renderLines, false);
+        gl.uniform1i(programInfo.uniformLocations.texOn, true);
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, vertices.length / 3);
+        gl.uniform1i(programInfo.uniformLocations.texOn, false);
+    }
+}
+
 function drawCircle(gl, programInfo, stat, thickness) {
     gl.useProgram(programInfo.circle.program);
 
@@ -44,6 +54,12 @@ function drawCircle(gl, programInfo, stat, thickness) {
     gl.uniformMatrix3fv(programInfo.circle.scaleToScreen, false, scaleToScreen(programInfo.screenDimension));
     var numItems = Math.abs(Math.floor(100*stat.rotation/(2*Math.PI)));
     gl.drawArrays(gl.LINES, 0, 2*numItems);
+}
+
+function setUniforms(gl, programInfo, stat) {
+    gl.useProgram(programInfo.program);
+    gl.uniformMatrix3fv(programInfo.uniformLocations.scaleToScreen, false, scaleToScreen(programInfo.screenDimension));
+    gl.uniformMatrix3fv(programInfo.uniformLocations.rotation, false,  rotateMatrix(stat.rotation));
 }
 
 /**
