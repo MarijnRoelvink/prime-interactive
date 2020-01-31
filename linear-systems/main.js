@@ -60,7 +60,7 @@ function draw() {
     drawBoundingBox(gl, programInfo, state);
 }
 
-// $(document).ready(() => {
-//     setTimeout(init, 500);
-// });
-init();
+$(document).ready(() => {
+    setTimeout(init, 500);
+});
+// init();

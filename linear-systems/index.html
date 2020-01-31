@@ -1,177 +1,180 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset=utf-8>
-    <title>PRIME interactive</title>
-    <script src="../js/jquery-3.4.1.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="../assets/bootstrap/css/bootstrap.css">
-    <script src="../assets/bootstrap/js/bootstrap.js"></script>
-    <!--    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">-->
-    <!--    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>-->
-    <link rel="stylesheet" type="text/css" href="../assets/fonts/cmun-bright.css">
-    <link rel="stylesheet" type="text/css" href="../assets/fonts/cmun-bright-semibold.css">
-    <link rel="stylesheet" type="text/css" href="../assets/style.css">
-    <style>
-        html, body {
-            height: 100%;
-            margin: 0;
-            padding: 0;
-            background: black;
-            color: white;
-        }
+	<meta charset=utf-8>
+	<title>PRIME interactive</title>
+	<script src="../js/jquery-3.4.1.min.js"></script>
+	<!--    <link rel="stylesheet" type="text/css" href="../assets/bootstrap/css/bootstrap.css">-->
+	<!--    <script src="../assets/bootstrap/js/bootstrap.js"></script>-->
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+	      integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+	        integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+	        crossorigin="anonymous"></script>
+	<link rel="stylesheet" type="text/css" href="../assets/fonts/cmun-bright.css">
+	<link rel="stylesheet" type="text/css" href="../assets/fonts/cmun-bright-semibold.css">
+	<link rel="stylesheet" type="text/css" href="../assets/style.css">
+	<style>
+		html, body {
+			height: 100%;
+			margin: 0;
+			padding: 0;
+			background: black;
+			color: white;
+		}
 
-        body {
-            margin: 0;
-            display: flex;
-            align-items: stretch;
-        }
+		body {
+			margin: 0;
+			display: flex;
+			align-items: stretch;
+		}
 
-        canvas {
-            flex-grow: 2;
-        }
+		canvas {
+			flex-grow: 2;
+		}
 
-        #user-input {
-            width: max-content;
-            min-height: 700px;
-            padding: 10px;
-            background: black;
-            color: #ffce2e;
-            display: flex;
-            flex-direction: column;
-        }
+		#user-input {
+			width: max-content;
+			min-height: 700px;
+			padding: 10px;
+			background: black;
+			color: #ffce2e;
+			display: flex;
+			flex-direction: column;
+		}
 
-        #user-input div {
-            margin: 5px;
-        }
+		#user-input div {
+			margin: 5px;
+		}
 
-        #row-ops {
-            display: flex;
-            flex-direction: column;
-            justify-content: space-around
-        }
+		#row-ops {
+			display: flex;
+			flex-direction: column;
+			justify-content: space-around
+		}
 
-        .operations-tab input[type="number"] {
-            width: 50px;
-            margin: 0 10px;
-        }
+		.operations-tab input[type="number"] {
+			width: 50px;
+			margin: 0 10px;
+		}
 
-        .operations-tab {
-            display: flex;
-        }
+		.operations-tab {
+			display: flex;
+		}
 
-        .slider {
-            margin: 5px;
-            width: 75%;
-        }
+		.slider {
+			margin: 5px;
+			width: 75%;
+		}
 
-    </style>
+	</style>
 </head>
 <body>
 <div class="d-flex align-items-stretch w-100 h-100">
-    <canvas id="glCanvas">
-    </canvas>
-    <div id="user-input">
-        <div class="d-flex align-items-center">
-            <div class="d-flex matrix-container">
-                <table class="matrix" id="input-matrix">
-                    <tr class="yellow row-1">
-                        <td><input type="text" value=1 id="m-1-1"></td>
-                        <td><input type="text" value=2 id="m-1-2"></td>
-                        <td><input type="text" value=3 id="m-1-3"></td>
-                    </tr>
-                    <tr class="blue row-2">
-                        <td><input type="text" value="5" id="m-2-1"></td>
-                        <td><input type="text" value="6" id="m-2-2"></td>
-                        <td><input type="text" value="7" id="m-2-3"></td>
-                    </tr>
-                    <tr class="pink row-3">
-                        <td><input type="text" value="9" id="m-3-1"></td>
-                        <td><input type="text" value="10" id="m-3-2"></td>
-                        <td><input type="text" value="11" id="m-3-3"></td>
-                    </tr>
-                </table>
-            </div>
-            <div class="d-flex matrix-container">
-                <table class="matrix">
-                    <tr class="row-1" style="color: rgb(255, 0, 0)">
-                        <td>x</td>
-                    </tr>
-                    <tr class="row-2" style="color: rgb(0, 255, 0)">
-                        <td>y</td>
-                    </tr>
-                    <tr class="row-3" style="color: rgb(0, 0, 255)">
-                        <td>z</td>
-                    </tr>
-                </table>
-            </div>
-            <div>=</div>
-            <div class="d-flex matrix-container">
-                <table class="matrix" id="ans-vector">
-                    <tr class="yellow row-1">
-                        <td><input type="text" value=4 id="m-1-4"></td>
-                    </tr>
-                    <tr class="blue row-2">
-                        <td><input type="text" value=8 id="m-2-4"></td>
-                    </tr>
-                    <tr class="pink row-3">
-                        <td><input type="text" value=12 id="m-3-4"></td>
-                    </tr>
-                </table>
-            </div>
-        </div>
-        <div id="row-ops">
-            <div id="zoom-container" class="d-flex flex-column pl-2">
-                <div>Zoom</div>
-                <div class="d-flex w-100 m-0">
-                    <input type="range" min="20" max="150" value="100" step="1" class="slider w-100 " id="zoom-slider">
-                    <span id="zoom-factor"></span><span>%</span>
-                </div>
-            </div>
-            <button class="btn btn-secondary m-2 row-ops-btn" id="row-addition-btn">Row addition</button>
-            <div class="operations-tab align-items-baseline flex-column" id="row-addition" style="display: none">
-                <div class="d-flex">Add row <input id="add-row1" type="number" value="1" min="1" max="3" required>
-                    to row <input id="add-row2" type="number" value="2" min="1" max="3" required></div>
-                <div class="w-100">With factor:</div>
-                <div class="d-flex w-100">
-                    <input type="range" min="-10" max="10" value="0" step="0.1" class="slider" id="add-slider">
-                    <span id="add-factor"></span>
-                </div>
-                <div>
-                    <button class="btn btn-warning" onclick="state.linearSystem.applyEdit()">Apply</button>
-                    <button class="btn light-gray" onclick="state.linearSystem.cancelEdit()">Cancel</button>
-                </div>
-            </div>
+	<canvas id="glCanvas">
+	</canvas>
+	<div id="user-input">
+		<div class="d-flex align-items-center">
+			<div class="d-flex matrix-container">
+				<table class="matrix" id="input-matrix">
+					<tr class="yellow row-1">
+						<td><input type="text" value=1 id="m-1-1"></td>
+						<td><input type="text" value=2 id="m-1-2"></td>
+						<td><input type="text" value=3 id="m-1-3"></td>
+					</tr>
+					<tr class="blue row-2">
+						<td><input type="text" value="5" id="m-2-1"></td>
+						<td><input type="text" value="6" id="m-2-2"></td>
+						<td><input type="text" value="7" id="m-2-3"></td>
+					</tr>
+					<tr class="pink row-3">
+						<td><input type="text" value="9" id="m-3-1"></td>
+						<td><input type="text" value="10" id="m-3-2"></td>
+						<td><input type="text" value="11" id="m-3-3"></td>
+					</tr>
+				</table>
+			</div>
+			<div class="d-flex matrix-container">
+				<table class="matrix">
+					<tr class="row-1" style="color: rgb(255, 0, 0)">
+						<td>x</td>
+					</tr>
+					<tr class="row-2" style="color: rgb(0, 255, 0)">
+						<td>y</td>
+					</tr>
+					<tr class="row-3" style="color: rgb(0, 0, 255)">
+						<td>z</td>
+					</tr>
+				</table>
+			</div>
+			<div>=</div>
+			<div class="d-flex matrix-container">
+				<table class="matrix" id="ans-vector">
+					<tr class="yellow row-1">
+						<td><input type="text" value=4 id="m-1-4"></td>
+					</tr>
+					<tr class="blue row-2">
+						<td><input type="text" value=8 id="m-2-4"></td>
+					</tr>
+					<tr class="pink row-3">
+						<td><input type="text" value=12 id="m-3-4"></td>
+					</tr>
+				</table>
+			</div>
+		</div>
+		<div id="row-ops">
+			<div id="zoom-container" class="d-flex flex-column pl-2">
+				<div>Zoom</div>
+				<div class="d-flex w-100 m-0">
+					<input type="range" min="20" max="150" value="100" step="1" class="slider w-100 " id="zoom-slider">
+					<span id="zoom-factor"></span><span>%</span>
+				</div>
+			</div>
+			<button class="btn btn-secondary m-2 row-ops-btn" id="row-addition-btn">Row addition</button>
+			<div class="operations-tab align-items-baseline flex-column" id="row-addition" style="display: none">
+				<div class="d-flex">Add row <input id="add-row1" type="number" value="1" min="1" max="3" required>
+					to row <input id="add-row2" type="number" value="2" min="1" max="3" required></div>
+				<div class="w-100">With factor:</div>
+				<div class="d-flex w-100">
+					<input type="range" min="-10" max="10" value="0" step="0.1" class="slider" id="add-slider">
+					<span id="add-factor"></span>
+				</div>
+				<div>
+					<button class="btn btn-warning" onclick="state.linearSystem.applyEdit()">Apply</button>
+					<button class="btn light-gray" onclick="state.linearSystem.cancelEdit()">Cancel</button>
+				</div>
+			</div>
 
-            <button class="btn btn-secondary m-2 row-ops-btn" id="row-switching-btn">Row switching</button>
-            <div class="operations-tab align-items-baseline flex-column" id="row-switching" style="display: none">
-                <div class="d-flex">Switch row <input id="switch-row1" type="number" value="1" min="1" max="3" required>
-                    with row <input class="row-index-input" id="switch-row2" type="number" value="1" min="1" max="3"
-                                    max="3" min="1" required></div>
-                <div>
-                    <button class="btn btn-warning" onclick="state.linearSystem.applyEdit()">Apply</button>
-                    <button class="btn light-gray" onclick="state.linearSystem.cancelEdit()">Cancel</button>
-                </div>
-            </div>
+			<button class="btn btn-secondary m-2 row-ops-btn" id="row-switching-btn">Row switching</button>
+			<div class="operations-tab align-items-baseline flex-column" id="row-switching" style="display: none">
+				<div class="d-flex">Switch row <input id="switch-row1" type="number" value="1" min="1" max="3" required>
+					with row <input class="row-index-input" id="switch-row2" type="number" value="1" min="1" max="3"
+					                max="3" min="1" required></div>
+				<div>
+					<button class="btn btn-warning" onclick="state.linearSystem.applyEdit()">Apply</button>
+					<button class="btn light-gray" onclick="state.linearSystem.cancelEdit()">Cancel</button>
+				</div>
+			</div>
 
-            <button class="btn btn-secondary m-2 row-ops-btn" id="row-multiplication-btn">Row multiplication</button>
-            <div class="operations-tab align-items-baseline flex-column" id="row-multiplication" style="display: none">
-                <div class="d-flex">Multiply row <input id="mul-row" type="number" value="1" max="3" min="1" required>
-                </div>
-                <div class="w-100">With factor:</div>
-                <div class="d-flex w-100">
-                    <input type="range" min="-10" max="10" value="1" step="0.25" class="slider" id="mul-slider">
-                    <span id="mul-factor"></span>
-                </div>
-                <div>
-                    <button class="btn btn-warning" onclick="state.linearSystem.applyEdit()">Apply</button>
-                    <button class="btn light-gray" onclick="state.linearSystem.cancelEdit()">Cancel</button>
-                </div>
-            </div>
-            <div class="console">
+			<button class="btn btn-secondary m-2 row-ops-btn" id="row-multiplication-btn">Row multiplication</button>
+			<div class="operations-tab align-items-baseline flex-column" id="row-multiplication" style="display: none">
+				<div class="d-flex">Multiply row <input id="mul-row" type="number" value="1" max="3" min="1" required>
+				</div>
+				<div class="w-100">With factor:</div>
+				<div class="d-flex w-100">
+					<input type="range" min="-10" max="10" value="1" step="0.25" class="slider" id="mul-slider">
+					<span id="mul-factor"></span>
+				</div>
+				<div>
+					<button class="btn btn-warning" onclick="state.linearSystem.applyEdit()">Apply</button>
+					<button class="btn light-gray" onclick="state.linearSystem.cancelEdit()">Cancel</button>
+				</div>
+			</div>
+			<div class="console">
 
-            </div>
-        </div>
-    </div>
+			</div>
+		</div>
+	</div>
 </div>
 </body>
 <audio id="error-audio" src="../assets/sounds/windows_critical_stop.wav"></audio>
@@ -195,6 +198,7 @@ void main() {
 	fragNorm = norm;
 	fragTex = tex;
 }
+
 
 
 
@@ -231,6 +235,7 @@ void main() {
        gl_FragColor = vec4(color.rgb * ka + kd * abs(dot(normalize(lightPos - fragPos), fragNorm)) * color.rgb, color.a);
     }
 }
+
 
 
 
