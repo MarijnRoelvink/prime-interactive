@@ -10,11 +10,11 @@
     color: #f87089;
 }
 
-.red, .red input{
+.red, .red input {
     color: red;
 }
 
-.white, .white input{
+.white, .white input {
     color: white;
 }
 
@@ -24,10 +24,10 @@
 }
 
 .matrix-container:before, .matrix-container:after, .vector-container:before, .vector-container:after {
-     content: "";
-     top: 0;
-     border: 1px solid white;
- }
+    content: "";
+    top: 0;
+    border: 1px solid white;
+}
 
 .matrix-container:before, .matrix-container:after {
     width: 6px;
@@ -56,7 +56,7 @@
     width: 35px;
 }
 
-.vector input{
+.vector input {
     width: 30px;
     font-size: 13px;
 }
