@@ -38,7 +38,7 @@ function init(meshes) {
 		},
 		screenDimension: canvas.height / canvas.width
 	};
-	loadImgTexture(gl, "../assets/img/huisje_geel.png", (tex) => {
+	loadImgTexture(gl, "../assets/huisje_geel.png", (tex) => {
 		data.house = tex;
 	});
 	data.vector = initMesh(gl, programInfo, meshes.vector);
@@ -127,5 +127,5 @@ function draw() {
 }
 
 OBJ.downloadMeshes({
-	'vector': '../assets/mesh/vector.obj'
+	'vector': '../assets/vector.obj'
 }, init);
