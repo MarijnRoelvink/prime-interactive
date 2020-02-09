@@ -6,13 +6,15 @@ let state = {
 	mouseOrigin: [0, 0],
 	dragging: false,
 	currFocus: 0,
-	vectors: []
+	vectors: [],
+	gridWidth: 2,
+	drawHouse: true
 };
 
 
 function init() {
 	state.matrix = new Matrix();
-	state.vectors = [new Vector([0.5, 0, 0], [0.48, 0.69, 0.91, 1.0]), new Vector([0, 0.5, 0], [1.0, 0.81, 0.18, 1.0])];
+	state.vectors = [new Vector([1, 0, 0], [1.0, 0.81, 0.18, 1.0]), new Vector([0, 1, 0], [0.48, 0.69, 0.91, 1.0])];
 
 	let canvasIds = ["gl-left", "gl-right"];
 
@@ -30,14 +32,19 @@ function init() {
 			attribLocations: {
 				pos: gl.getAttribLocation(shaderProgram, 'pos'),
 				norm: gl.getAttribLocation(shaderProgram, 'norm'),
+				tex: gl.getAttribLocation(shaderProgram, 'tex')
 			},
 			uniformLocations: {
 				mvp: gl.getUniformLocation(shaderProgram, 'mvp'),
 				color: gl.getUniformLocation(shaderProgram, 'color'),
-				scaleToScreen: gl.getUniformLocation(shaderProgram, 'scaleToScreen')
+				texOn: gl.getUniformLocation(shaderProgram, 'texOn')
 			},
 			screenDimension: canvas.height / canvas.width,
 		};
+
+		loadImgTexture(gl, "../assets/huisje_geel.png", (tex) => {
+			programInfos[i].house = tex;
+		});
 	}
 
 	registerMouseEvents(state);
@@ -68,7 +75,8 @@ function updateHTML() {
 }
 
 function draw() {
-	let matrices = [mat4.create(), state.matrix.getGlMatrix()];
+	let dimMatrix = getDimensionMatrix(programInfos[0], state.gridWidth);
+	let matrices = [dimMatrix, mat4.mul(mat4.create(), dimMatrix, state.matrix.getGlMatrix())];
 
 	for (let i = 0; i < 2; i++) {
 		let gl = gls[i];
@@ -78,6 +86,10 @@ function draw() {
 		gl.useProgram(programInfo.program);
 		gl.uniformMatrix4fv(programInfo.uniformLocations.mvp, false, mat4.create());
 		drawAxes(gl, programInfo);
+		if(state.drawHouse) {
+			gl.uniformMatrix4fv(programInfo.uniformLocations.mvp, false, matrices[i]);
+			drawHouse(gl, programInfo);
+		}
 		state.vectors[0].draw(gl, programInfo, matrices[i]);
 		state.vectors[1].draw(gl, programInfo, matrices[i]);
 	}

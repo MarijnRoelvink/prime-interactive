@@ -1,15 +1,25 @@
 function registerMouseEvents(state) {
 	let getRelativeVector = function (x, y, el) {
-		return [x / el.offsetWidth * 2, y / el.offsetHeight * 2];
+		return [x / el.offsetWidth * (2*state.gridWidth), y / el.offsetWidth * (2*state.gridWidth)];
+	};
+
+	//returns array with two vec3's
+	let getTranformedVectors = function() {
+		return [state.matrix.getTransformedVector(state.vectors[0].vector),
+			state.matrix.getTransformedVector(state.vectors[1].vector)];
 	};
 
 	let start = function (x, y, el) {
 		state.mouseOrigin = [x, y];
 		state.dragging = true;
 		let pos = getRelativeVector(x, y, el);
-		pos = [pos[0] - 1, 1 - pos[1]];
-		state.currFocus = getVecDistance(pos, state.vectors[0].vector) < getVecDistance(pos, state.vectors[1].vector) ? 0 : 1;
-		;
+		pos = [pos[0] - state.gridWidth, state.gridWidth*programInfos[0].screenDimension - pos[1]];
+		if(el.id === "gl-left") {
+			state.currFocus = getVecDistance(pos, state.vectors[0].vector) < getVecDistance(pos, state.vectors[1].vector) ? 0 : 1;
+		} else if(el.id === "gl-right") {
+			let tvs = getTranformedVectors();
+			state.currFocus = getVecDistance(pos, tvs[0]) < getVecDistance(pos, tvs[1]) ? 0 : 1;
+		}
 	};
 	let move = function (x, y, el) {
 		if (state.dragging) {
@@ -18,8 +28,7 @@ function registerMouseEvents(state) {
 			if (el.id === "gl-left") {
 				vec.transform(movement[0], movement[1]);
 			} else if (el.id === "gl-right") {
-				let tvs = [vec3.transformMat4(vec3.create(), state.vectors[0].vector, state.matrix.getGlMatrix()),
-					vec3.transformMat4(vec3.create(), state.vectors[1].vector, state.matrix.getGlMatrix())];
+				let tvs = getTranformedVectors();
 				tvs[state.currFocus][0] += movement[0];
 				tvs[state.currFocus][1] += movement[1];
 				let mA = mat2.fromValues(state.vectors[0].vector[0], state.vectors[0].vector[1], state.vectors[1].vector[0], state.vectors[1].vector[1]);
@@ -52,5 +61,19 @@ function registerMouseEvents(state) {
 		canvas.onmouseup = end;
 		canvas.ontouchend = end;
 	}
+
+	window.onresize = function (event) {
+		for (let i = 0; i < 2; i++) {
+			let programInfo = programInfos[i];
+			let canvas = canvases[i];
+			programInfo.screenDimension = canvas.clientHeight / canvas.clientWidth;
+		}
+	};
+
+	$("#toggle-house img").click(() => {
+		state.drawHouse = !state.drawHouse;
+		$("#house-on").css("display", state.drawHouse? "inline" : "none");
+		$("#house-off").css("display", !state.drawHouse? "inline" : "none");
+	});
 }
 
