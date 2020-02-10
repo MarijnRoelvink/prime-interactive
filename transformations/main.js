@@ -48,17 +48,14 @@ function init() {
 	}
 
 	registerMouseEvents(state);
+	registerNumberInput(state);
 	tick();
 }
 
 function tick() {
 	requestAnimFrame(tick);
-	update();
-	draw();
-}
-
-function update() {
 	updateHTML();
+	draw();
 }
 
 function updateHTML() {
@@ -66,11 +63,21 @@ function updateHTML() {
 	let ids = ["vl-no1", "vl-no2", "vr-no1", "vr-no2"];
 	for (let i = 0; i < 4; i++) {
 		$("#" + ids[i] + " input").each(function () {
-			let index = parseInt(this.className.split(/\s/).filter((cn) => cn.indexOf('v-') === 0)[0].split("-")[1]);
+			let index = parseInt($(this).attr("cell"));
 			index--;
 			let check = vectors[i][index];
-			$(this).val(Math.round(vectors[i][index] * 100) / 100);
+			if(!$(this).is(":focus")) {
+				$(this).val(Math.round(vectors[i][index] * 100) / 100);
+			}
 		});
+	}
+	for (let i = 0; i < 2; i++) {
+		for (let j = 0; j < 2; j++) {
+			let selector = "#m-" + (i + 1) + "-" + (j + 1);
+			if(!$(selector).is(":focus")) {
+				$(selector).val(Math.round(state.matrix.matrix[i][j] * 100) / 100);
+			}
+		}
 	}
 }
 

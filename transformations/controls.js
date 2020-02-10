@@ -1,12 +1,20 @@
+//returns array with two vec3's
+function getTranformedVectors() {
+	return [state.matrix.getTransformedVector(state.vectors[0].vector),
+		state.matrix.getTransformedVector(state.vectors[1].vector)];
+}
+
+
+function calcNewMatrix(vecsA, vecsB) {
+	let mA = mat2.fromValues(vecsA[0][0], vecsA[0][1], vecsA[1][0], vecsA[1][1]);
+	let mB = mat2.fromValues(vecsB[0][0], vecsB[0][1], vecsB[1][0], vecsB[1][1]);
+	return solve2DMatrixEquation(mA, mB);
+}
+
+
 function registerMouseEvents(state) {
 	let getRelativeVector = function (x, y, el) {
 		return [x / el.offsetWidth * (2*state.gridWidth), y / el.offsetWidth * (2*state.gridWidth)];
-	};
-
-	//returns array with two vec3's
-	let getTranformedVectors = function() {
-		return [state.matrix.getTransformedVector(state.vectors[0].vector),
-			state.matrix.getTransformedVector(state.vectors[1].vector)];
 	};
 
 	let start = function (x, y, el) {
@@ -31,12 +39,9 @@ function registerMouseEvents(state) {
 				let tvs = getTranformedVectors();
 				tvs[state.currFocus][0] += movement[0];
 				tvs[state.currFocus][1] += movement[1];
-				let mA = mat2.fromValues(state.vectors[0].vector[0], state.vectors[0].vector[1], state.vectors[1].vector[0], state.vectors[1].vector[1]);
-				let mB = mat2.fromValues(tvs[0][0], tvs[0][1], tvs[1][0], tvs[1][1]);
-				state.matrix.setMat2(solve2DMatrixEquation(mA, mB));
+				state.matrix.setMat2(calcNewMatrix(state.vectors.map((v) => v.vector), tvs));
 			}
 			state.mouseOrigin = [x, y];
-
 		}
 	};
 	let end = function () {
@@ -76,4 +81,36 @@ function registerMouseEvents(state) {
 		$("#house-off").css("display", !state.drawHouse? "inline" : "none");
 	});
 }
+
+function registerNumberInput(state) {
+	for (let i = 0; i < 2; i++) {
+		$("#vl-no" + (i+1) + " input").each(function() {
+			this.onchange = () => {
+				let index = parseInt($(this).attr("cell")) - 1;
+				state.vectors[i].vector[index] = parseFloat(this.value);
+			};
+		});
+	}
+	for (let i = 0; i < 2; i++) {
+		$("#vr-no" + (i+1) + " input").each(function() {
+			this.onchange = () => {
+				let index = parseInt($(this).attr("cell")) - 1;
+				let tvs = getTranformedVectors();
+				tvs[i][index] = parseFloat(this.value);
+				state.matrix.setMat2(calcNewMatrix(state.vectors.map((v) => v.vector), tvs));
+			};
+		});
+	}
+
+	$("#transformation-matrix td input").each(function() {
+		let index = this.id.split("-");
+		let rowIndex = index[1] - 1;
+		let colIndex = index[2] - 1;
+
+		this.onchange = function () {
+			state.matrix.matrix[rowIndex][colIndex] = parseFloat(this.value);
+		}
+	});
+}
+
 
