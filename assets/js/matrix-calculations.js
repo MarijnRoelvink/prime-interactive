@@ -6,11 +6,11 @@
  * @returns updated row2
  */
 function rowAddition(row1, row2, factor) {
-    let res = [];
-    for (let i = 0; i < 4; i++) {
-        res.push(row2[i]+row1[i]*factor);
-    }
-    return res;
+	let res = [];
+	for (let i = 0; i < 4; i++) {
+		res.push(row2[i] + row1[i] * factor);
+	}
+	return res;
 }
 
 /**
@@ -20,11 +20,11 @@ function rowAddition(row1, row2, factor) {
  * @returns updated row
  */
 function rowMultiplication(row, factor) {
-    let res = [];
-    for (let i = 0; i < row.length; i++) {
-        res.push(factor*row[i]);
-    }
-    return res;
+	let res = [];
+	for (let i = 0; i < row.length; i++) {
+		res.push(factor * row[i]);
+	}
+	return res;
 }
 
 /**
@@ -37,7 +37,7 @@ function rowMultiplication(row, factor) {
  * @returns z
  */
 function getZ(x, y, params) {
-    return (params[0]*x + params[1]*y - params[3])/(-1*params[2]);
+	return (params[0] * x + params[1] * y - params[3]) / (-1 * params[2]);
 }
 
 /**
@@ -50,7 +50,7 @@ function getZ(x, y, params) {
  * @returns y
  */
 function getY(x, z, params) {
-    return (params[0]*x + params[2]*z - params[3])/(-1*params[1]);
+	return (params[0] * x + params[2] * z - params[3]) / (-1 * params[1]);
 }
 
 /**
@@ -63,5 +63,20 @@ function getY(x, z, params) {
  * @returns x
  */
 function getX(y, z, params) {
-    return (params[1]*y + params[2]*z - params[3])/(-1*params[0]);
+	return (params[1] * y + params[2] * z - params[3]) / (-1 * params[0]);
+}
+
+/**
+ * solves the matrix equation A*X = B
+ * @param mA: mat2
+ * @param mB: mat2
+ * @returns mat2
+ */
+function solve2DMatrixEquation(mA, mB) {
+	if (mat2.determinant(mA)) {
+		return mat2.multiply(mat2.create(), mB, mat2.invert(mA, mA));
+	} else {
+		console.log("matrix A was not invertible");
+		return mat2.create();
+	}
 }

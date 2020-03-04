@@ -10,8 +10,12 @@
     color: #f87089;
 }
 
-.red, .red input{
+.red, .red input {
     color: red;
+}
+
+.white, .white input {
+    color: white;
 }
 
 .light-gray {
@@ -19,17 +23,50 @@
     border-color: #e3ddd8;
 }
 
-.matrix-container:before, .matrix-container:after {
+.matrix-container:before, .matrix-container:after, .vector-container:before, .vector-container:after {
     content: "";
     top: 0;
     border: 1px solid white;
+}
+
+.matrix-container:before, .matrix-container:after {
     width: 6px;
 }
 
-.matrix-container:before {
+.vector-container:before, .vector-container:after {
+    width: 3px;
+}
+
+
+.matrix-container:before, .vector-container:before {
     border-right: 0px;
 }
 
-.matrix-container:after {
+.matrix-container:after, .vector-container:after {
     border-left: 0px;
+}
+
+.matrix input, .vector input {
+    height: 20px;
+    background: #2e2d2d;
+    border: none;
+}
+
+.matrix input {
+    width: 35px;
+}
+
+.vector input {
+    width: 30px;
+    font-size: 13px;
+}
+
+.matrix td {
+    padding: 5px;
+    text-align: center;
+}
+
+.vector td {
+    padding: 2px;
+    text-align: center;
 }

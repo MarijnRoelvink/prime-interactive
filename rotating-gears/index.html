@@ -1,113 +1,116 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset=utf-8>
-    <title>PRIME interactive</title>
-    <link rel="stylesheet" type="text/css" href="../assets/fonts/cmun-bright.css">
-    <link rel="stylesheet" type="text/css" href="../assets/fonts/cmun-bright-semibold.css">
-    <link rel="stylesheet" type="text/css" href="../assets/style.css">
-    <link rel="stylesheet" type="text/css" href="../assets/bootstrap/css/bootstrap.css">
-    <!--    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">-->
-    <!--    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>-->
-    <style>
-        html, body {
-            height: 100%;
-            min-height: 500px;
-            margin: 0;
-            padding: 0;
-            font-family: "Computer Modern Bright";
-            font-size: 1.1em;
-        }
+	<meta charset=utf-8>
+	<title>PRIME interactive</title>
+	<link rel="stylesheet" type="text/css" href="../assets/fonts/cmun-bright.css">
+	<link rel="stylesheet" type="text/css" href="../assets/fonts/cmun-bright-semibold.css">
+	<link rel="stylesheet" type="text/css" href="../assets/style.css">
+	<!--	<link rel="stylesheet" type="text/css" href="../assets/bootstrap/css/bootstrap.css">-->
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+	      integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+	<style>
+		html, body {
+			height: 100%;
+			min-height: 500px;
+			margin: 0;
+			padding: 0;
+			font-family: "Computer Modern Bright";
+			font-size: 1.1em;
+		}
 
-        body {
-            margin: 0;
-            display: flex;
-            align-items: stretch;
-            background: black;
-        }
+		body {
+			margin: 0;
+			display: flex;
+			align-items: stretch;
+			background: black;
+		}
 
-        canvas {
-            width: 100%;
-            height: 100%
-        }
+		canvas {
+			width: 100%;
+			height: 100%
+		}
 
-        #matrix {
-            width: max-content;
-            height: 20%;
-            position: absolute;
-            right: 10px;
-            bottom: 0;
-            background: black;
-            color: #ffce2e;
-        }
+		#matrix {
+			width: max-content;
+			height: 20%;
+			position: absolute;
+			right: 10px;
+			bottom: 0;
+			background: black;
+			color: #ffce2e;
+		}
 
-        @media (max-width: 685px) {
-            #matrix {
-                width: 80%;
-            }
-        }
+		@media (max-width: 685px) {
+			#matrix {
+				width: 80%;
+			}
+		}
 
-        #matrix div {
-            margin: 5px;
-        }
-        #matrix td {
-            padding-right: 5px;
-        }
+		#matrix div {
+			margin: 5px;
+		}
 
-        .matrix-container:before, .matrix-container:after {
-            border-color: #7ab1e8;
-        }
-    </style>
+		.matrix-container:before, .matrix-container:after {
+			border-color: #7ab1e8;
+		}
+	</style>
 </head>
 <body>
 <div style="width: 100%;">
-    <canvas id="glCanvas"></canvas>
+	<canvas id="glCanvas"></canvas>
 </div>
 <div id="matrix">
-    <div class="d-flex align-items-center">
-        <div class="d-flex matrix-container">
-            <table class="matrix">
-                <tr>
-                    <td>cos(<span class="angle">T</span>)</td>
-                    <td>-sin(<span class="angle">T</span>)</td>
-                </tr>
-                <tr>
-                    <td>sin(<span class="angle">T</span>)</td>
-                    <td>cos(<span class="angle">T</span>)</td>
-                </tr>
-            </table>
-        </div>
-        <div class="blue">=</div>
-        <div class="d-flex matrix-container">
-            <table class="matrix evaluated">
-                <tr>
-                    <td id="eval-1-1">0</td>
-                    <td id="eval-1-2">0</td>
-                </tr>
-                <tr>
-                    <td id="eval-2-1">0</td>
-                    <td id="eval-2-2">0</td>
-                </tr>
-            </table>
-        </div>
-    </div>
+	<div class="d-flex align-items-center">
+		<div class="d-flex matrix-container">
+			<table class="matrix">
+				<tr>
+					<td>cos(<span class="angle">T</span>)</td>
+					<td>-sin(<span class="angle">T</span>)</td>
+				</tr>
+				<tr>
+					<td>sin(<span class="angle">T</span>)</td>
+					<td>cos(<span class="angle">T</span>)</td>
+				</tr>
+			</table>
+		</div>
+		<div class="blue">=</div>
+		<div class="d-flex matrix-container">
+			<table class="matrix evaluated">
+				<tr>
+					<td id="eval-1-1">0</td>
+					<td id="eval-1-2">0</td>
+				</tr>
+				<tr>
+					<td id="eval-2-1">0</td>
+					<td id="eval-2-2">0</td>
+				</tr>
+			</table>
+		</div>
+	</div>
 </div>
 </body>
 <script id="vertex-shader" type="not-javascript">
 // Per-vertex attributes
 attribute vec3 pos; // World-space position
 attribute vec3 norm; // World-space position
+attribute vec2 tex;
 
 uniform mat3 scaleToScreen;
 uniform mat3 rotation;
 varying highp vec3 fragNorm;
+varying highp vec2 fragTex;
 
 void main() {
 	// Transform 3D position into on-screen position
 	gl_Position = (vec4(scaleToScreen*rotation*pos, 1.0));
 	fragNorm = norm;
+	fragTex = tex;
 
 }
+
+
+
 
 
 
@@ -117,20 +120,31 @@ void main() {
 <script id="fragment-shader" type="not-javascript">
 
 varying highp vec3 fragNorm;
+varying highp vec2 fragTex;
+
 uniform bool renderLines;
+uniform bool texOn;
+uniform sampler2D texture;
+
 
 void main() {
 	// output
 	if(renderLines) {
-	        gl_FragColor = vec4(0.48, 0.69, 0.91, 1.0); //make helplines blue
+		gl_FragColor = vec4(0.48, 0.69, 0.91, 1.0); //make helplines blue
 	}
-    else if(abs(fragNorm).z > 0.9) {
-        gl_FragColor = vec4(0.81, 0.78, 0.75, 1.0); //make planes gray
-    }
-    else {
-        gl_FragColor = vec4(1.0, 0.81, 0.18, 1.0); // make edges yellow
-    }
+else if(texOn) {
+		highp vec4 texColor  = texture2D(texture, fragTex);
+		/*if(texColor.x > 0.9 && texColor.y > 0.9 && texColor.z > 0.9) {
+			gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);
+		} else {
+			gl_FragColor = texture2D(texture, fragTex);
+		}*/
+		gl_FragColor = texture2D(texture, fragTex);
+	}
 }
+
+
+
 
 
 
@@ -143,10 +157,13 @@ attribute vec3 pos; // World-space position
 uniform mat3 scaleToScreen;
 
 void main() {
-	// Transform 3D position into on-screen position
+    // Transform 3D position into on-screen position
 	gl_Position = (vec4(scaleToScreen*pos, 1.0));
 
 }
+
+
+
 
 
 
@@ -157,20 +174,19 @@ void main() {
 
 void main() {
 	// output
-    gl_FragColor = vec4(0.48, 0.69, 0.91, 1.0);
+	gl_FragColor = vec4(0.48, 0.69, 0.91, 1.0);
 }
 
 
 
-
-
 </script>
-<script src="../js/webgl-helpers.js"></script>
-<script src="../js/webgl-obj-loader.min.js"></script>
-<script src="../js/gl-matrix-min.js"></script>
-<script src="../js/webgl-utils.js"></script>
-<script src="../js/vector-math.js"></script>
-<script src="../js/globals.js"></script>
+<script src="../assets/js/webgl-helpers.js"></script>
+<script src="../assets/js/webgl-obj-loader.min.js"></script>
+<script src="../assets/js/gl-matrix-min.js"></script>
+<script src="../assets/js/webgl-utils.js"></script>
+<script src="../assets/js/vector-math.js"></script>
+<script src="../assets/js/geometry.js"></script>
+<script src="../assets/js/globals.js"></script>
 <script src="webglfunctions.js"></script>
 <script src="main.js"></script>
 </html>
