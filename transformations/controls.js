@@ -26,8 +26,10 @@ function registerMouseEvents(state) {
 		//find which canvas you are at, and then which arrow you are closest to
 		pos = [pos[0] - state.gridWidth, state.gridWidth*programInfos[0].screenDimension - pos[1]];
 		if(el.id === "gl-left") {
+			state.currCanvasLeft =true;
 			state.currFocus = getVecDistance(pos, state.vectors[0].vector) < getVecDistance(pos, state.vectors[1].vector) ? 0 : 1;
 		} else if(el.id === "gl-right") {
+			state.currCanvasLeft = false;
 			let tvs = getTranformedVectors();
 			state.currFocus = getVecDistance(pos, tvs[0]) < getVecDistance(pos, tvs[1]) ? 0 : 1;
 		}
@@ -37,9 +39,11 @@ function registerMouseEvents(state) {
 		if (state.dragging) {
 			let movement = getRelativeVector(x - state.mouseOrigin[0], -(y - state.mouseOrigin[1]), el);
 			let vec = state.vectors[state.currFocus];
-			if (el.id === "gl-left") {
+
+			//transform the vectors, only when mouse position is in current canvas.
+			if (el.id === "gl-left" && state.currCanvasLeft) {
 				vec.transform(movement[0], movement[1]);
-			} else if (el.id === "gl-right") {
+			} else if (el.id === "gl-right" && !state.currCanvasLeft) {
 				let tvs = getTranformedVectors();
 				tvs[state.currFocus][0] += movement[0];
 				tvs[state.currFocus][1] += movement[1];

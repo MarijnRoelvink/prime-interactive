@@ -8,7 +8,8 @@ let state = {
 	currFocus: 0,
 	vectors: [],
 	gridWidth: 2,
-	drawHouse: true
+	drawHouse: true,
+	currCanvasLeft: true //which canvas is last clicked on
 };
 
 
