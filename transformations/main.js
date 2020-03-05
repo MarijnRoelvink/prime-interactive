@@ -97,6 +97,8 @@ function draw() {
 			gl.uniformMatrix4fv(programInfo.uniformLocations.mvp, false, matrices[i]);
 			drawHouse(gl, programInfo);
 		}
+
+		//draw the arrows
 		state.vectors[0].draw(gl, programInfo, matrices[i]);
 		state.vectors[1].draw(gl, programInfo, matrices[i]);
 	}

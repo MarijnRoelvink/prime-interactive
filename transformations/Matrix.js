@@ -14,6 +14,11 @@ class Matrix {
 			0, 0, 0, 1));
 	}
 
+    /**
+	 * The opposite of getGlMatrix
+	 * Put in a mat4 matrix, transform this.Matrix with the data of the mat4 matrix
+     * @param matrix
+     */
 	from4Dto2DMatrix(matrix) {
 		this.matrix = [[matrix[0], matrix[4]],
 			[matrix[1], matrix[5]]];
