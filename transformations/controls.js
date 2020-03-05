@@ -17,10 +17,13 @@ function registerMouseEvents(state) {
 		return [x / el.offsetWidth * (2*state.gridWidth), y / el.offsetWidth * (2*state.gridWidth)];
 	};
 
+	//start movement/dragging (a click or a touch)
 	let start = function (x, y, el) {
 		state.mouseOrigin = [x, y];
 		state.dragging = true;
 		let pos = getRelativeVector(x, y, el);
+
+		//find which canvas you are at, and then which arrow you are closest to
 		pos = [pos[0] - state.gridWidth, state.gridWidth*programInfos[0].screenDimension - pos[1]];
 		if(el.id === "gl-left") {
 			state.currFocus = getVecDistance(pos, state.vectors[0].vector) < getVecDistance(pos, state.vectors[1].vector) ? 0 : 1;
@@ -29,6 +32,7 @@ function registerMouseEvents(state) {
 			state.currFocus = getVecDistance(pos, tvs[0]) < getVecDistance(pos, tvs[1]) ? 0 : 1;
 		}
 	};
+
 	let move = function (x, y, el) {
 		if (state.dragging) {
 			let movement = getRelativeVector(x - state.mouseOrigin[0], -(y - state.mouseOrigin[1]), el);
